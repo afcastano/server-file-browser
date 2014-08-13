@@ -1,6 +1,7 @@
 var express = require('express');
 
 var fs = require('fs');
+var fs = require('fs.extra');
 var app = express();
 var env = require(__dirname + '/../' + process.argv[2]);
 var versionProp = require(__dirname + '/../package.json');
@@ -38,9 +39,14 @@ app.post('/api/move', function(req, res){
 	console.log(req.body.target);
 	console.log(req.body.file);
 
-	fs.renameSync(req.body.origin + '/' + req.body.file, req.body.target + '/' + req.body.file);
+	fs.move(req.body.origin + '/' + req.body.file, req.body.target + '/' + req.body.file, function(err){
+		if (err) {
+   		 throw err;
+  		}
+		res.send('OK');	
+	});
 
-	res.send('OK');
+	
 });
 
 app.use(express.static(__dirname + "/www"));
