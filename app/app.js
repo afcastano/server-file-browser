@@ -3,6 +3,7 @@ var express = require('express');
 var fs = require('fs');
 var app = express();
 var env = require(__dirname + '/../' + process.argv[2]);
+var versionProp = require(__dirname + '/../package.json');
 
 
 
@@ -26,6 +27,10 @@ app.get('/api/defaultpath', function(req, res) {
 		origin: env.origin,
 		target: env.target
 	})
+});
+
+app.get('/api/version', function(req, res){
+	res.send(versionProp.version);
 });
 
 app.post('/api/move', function(req, res){

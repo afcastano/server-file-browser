@@ -10,5 +10,6 @@
   "dependencies": {
     "express": "4.8.1",
     "body-parser": "1.6.3"
-  }
+  },
+  "version": "v0.1.0"
 }
