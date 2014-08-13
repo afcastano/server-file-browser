@@ -4,12 +4,13 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-  	"start-linux" : "node app/app.js conf/linuxProp.json",
+  	"start-linux" : "nodejs app/app.js conf/linuxProp.json",
   	"start-mac" : "node app/app.js conf/macProp.json"
   },
   "dependencies": {
     "express": "4.8.1",
-    "body-parser": "1.6.3"
+    "body-parser": "1.6.3",
+    "fs.extra": "1.2.1"
   },
-  "version": "v0.1.0"
+  "version": "v0.1.1"
 }
