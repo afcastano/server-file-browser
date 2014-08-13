@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Server Explorer</title>
+	<link href="assets/css/todo.css" rel="stylesheet" type="text/css" />
+	<link href="assets/css/angular.treeview.css" rel="stylesheet" type="text/css" />
+  
+</head>
+<body ng-app="server-explorer" ng-controller="filesController" ng-init="initialize()">
+	<div>
+		<nav class="navbar navbar-default todo-navbar" role="navigation">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="#">Server explorer <small>{{version}}</small></a>
+				</div>
+			</div>
+		</nav>
+	</div>
+
+	<div class="container-fluid ">
+		<div class="row">
+			
+			<div class="col-md-6">
+				<div class="row">
+
+					<div class="col-md-2" style="padding-left: 30px;">
+						<h3>Origin</h3>
+					</div>
+
+				</div>
+				<div class="row">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+	    					<div class="row">
+	    						<div class="col-md-10">
+	    							<input type="text" class="form-control input-normal ng-pristine ng-valid" ng-model="origin">
+	    						</div>
+
+
+	    						<div class="col-md-2" style="padding-left: 0px;">
+	    							<button type="button" class="btn btn-primary" ng-click="loadOriginFiles()">Load</button>
+	    						</div>
+	    					</div>
+	  					</div>
+	  					<div class="panel-body">
+							<div class="col-md-10" id="main_content"
+							>
+								<div
+								    data-angular-treeview="true"
+								    data-tree-id="originTree"
+								    data-tree-model="origindata"
+								    data-node-id="id"
+								    data-node-label="label"
+			    					data-node-children="children" >
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>	
+			</div>
+
+
+			<div class="col-md-6" >
+				<div class="row">
+
+					<div class="col-md-2">
+						<h3>Target</h3>
+					</div>
+
+				</div>
+				<div class="row">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+	    					<div class="row">
+	    						<div class="col-md-10">
+	    							<input type="text" class="form-control input-normal ng-pristine ng-valid" ng-model="target">
+	    						</div>
+
+
+	    						<div class="col-md-2" style="padding-left: 0px;">
+	    							<button type="button" class="btn btn-primary" ng-click="loadTargetFiles()">Load</button>
+	    						</div>
+	    					</div>
+	  					</div>
+	  					<div class="panel-body">
+							<div class="col-md-10" id="main_content"
+							>
+								<div
+								    data-angular-treeview="true"
+								    data-tree-id="targetTree"
+								    data-tree-model="targetdata"
+								    data-node-id="id"
+								    data-node-label="label"
+			    					data-node-children="children" >
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>	
+			</div>
+
+
+		</div>
+		<div class="row">
+			<div class="col-md-2" style="padding-left: 30px;">
+				<button type="button" ng-click="moveFile()" class="btn btn-primary">Move</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="performance" ng-performance></div>
+  	<script src="assets/js/vendor/jquery-1.8.2.js" type="text/javascript"></script>
+	<script src="assets/js/vendor/bootstrap.js"></script>
+	<script src="assets/js/vendor/angular.js"></script>
+	<script src="assets/js/vendor/ui-bootstrap-tpls-0.10.0.js"></script>
+  	<script src="assets/js/vendor/angular.treeview.js"></script>
+  
+  <script src="assets/js/app.js"></script>
+  
+
+
+</body>
+</html>
