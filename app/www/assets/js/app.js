@@ -12,6 +12,10 @@ angular.module('server-explorer', ['angularTreeview'])
 					$scope.targetDir = $scope.target;
 			});
 
+			$http.get('/api/version').success(function(data){
+				$scope.version = data;
+			});
+
 			$scope.$watch( 'originTree.currentNode', function( newObj, oldObj ) {
 			    if( $scope.originTree && angular.isObject($scope.originTree.currentNode) ) {
 			        $scope.originFile = $scope.originTree.currentNode.label;
