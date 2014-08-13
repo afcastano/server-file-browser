@@ -1,6 +1,5 @@
 var express = require('express');
 
-var fs = require('fs');
 var fs = require('fs.extra');
 var app = express();
 var env = require(__dirname + '/../' + process.argv[2]);
@@ -39,11 +38,18 @@ app.post('/api/move', function(req, res){
 	console.log(req.body.target);
 	console.log(req.body.file);
 
-	fs.move(req.body.origin + '/' + req.body.file, req.body.target + '/' + req.body.file, function(err){
+	fs.copyRecursive(req.body.origin + '/' + req.body.file, req.body.target + '/' + req.body.file, function(err){
 		if (err) {
    		 throw err;
   		}
-		res.send('OK');	
+
+  		fs.rmrf(req.body.origin + '/' + req.body.file, function(err){
+  			if (err) {
+   		 		throw err;
+  			}
+  			res.send('OK');
+  		});
+			
 	});
 
 	
