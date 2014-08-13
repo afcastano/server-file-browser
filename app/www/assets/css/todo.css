@@ -1,0 +1,67 @@
+@import url('bootstrap.css');
+
+body {
+	font-size: 12px;
+}
+
+h3 {
+	color: #777777;
+	font-size: 16px;
+	line-height: 20px;
+	margin-top: 5px;
+}
+
+h1 {
+	color: #777777;
+	font-size: 26px;
+}
+
+ul {
+	list-style-type: none;
+}
+
+.search-box
+{
+}
+
+.title-menu {
+	float: right;
+	font-size: 12px; 
+}
+
+.inlineEditable {
+	width: 99%;
+	display: inline-block;
+}
+
+.inlineEditable input {
+	width: 80%;
+}
+
+.context-menu {
+	display: inline-block;
+	margin-left: -200px;
+}
+
+.menu-div {
+	background-color: #f8f8f8;
+	padding-top: 5px;
+	padding-left: 10px;
+	padding-right: 0px;
+	border-radius: 10px;
+	border: 1px solid #e7e7e7;
+	margin-bottom: 10px;
+}
+
+.todo-navbar {
+	margin-bottom: 10px;
+}
+
+.context-btn {
+	margin-right: 3px;
+}
+
+.legend-item {
+	font-style: italic;
+	font-family: monospace;
+}

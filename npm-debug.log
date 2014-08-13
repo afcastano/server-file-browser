@@ -1,0 +1,26 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'node', '/usr/local/bin/npm', 'run-script', 'start-mac' ]
+2 info using npm@1.4.9
+3 info using node@v0.10.28
+4 verbose run-script [ 'prestart-mac', 'start-mac', 'poststart-mac' ]
+5 info prestart-mac hello-world@0.0.1
+6 info start-mac hello-world@0.0.1
+7 verbose unsafe-perm in lifecycle true
+8 info hello-world@0.0.1 Failed to exec start-mac script
+9 error hello-world@0.0.1 start-mac: `node app/app.js /conf/macProp.json`
+9 error Exit status 8
+10 error Failed at the hello-world@0.0.1 start-mac script.
+10 error This is most likely a problem with the hello-world package,
+10 error not with npm itself.
+10 error Tell the author that this fails on your system:
+10 error     node app/app.js /conf/macProp.json
+10 error You can get their info via:
+10 error     npm owner ls hello-world
+10 error There is likely additional logging output above.
+11 error System Darwin 13.2.0
+12 error command "node" "/usr/local/bin/npm" "run-script" "start-mac"
+13 error cwd /Users/afcastano/projects/casa-file-browser
+14 error node -v v0.10.28
+15 error npm -v 1.4.9
+16 error code ELIFECYCLE
+17 verbose exit [ 1, true ]
