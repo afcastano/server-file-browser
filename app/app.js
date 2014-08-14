@@ -7,7 +7,12 @@ var versionProp = require(__dirname + '/../package.json');
 
 
 
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
+
+var isDir = function(filePath) {
+	return fs.lstatSync(filePath).isDirectory();
+}
+
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use( bodyParser.urlencoded({
 	extended: true
@@ -33,29 +38,70 @@ app.get('/api/version', function(req, res){
 	res.send(versionProp.version);
 });
 
-app.post('/api/move', function(req, res){
+app.post('/api/copy', function(req, res){
 	console.log(req.body.origin);
 	console.log(req.body.target);
 	console.log(req.body.file);
 
-	fs.copyRecursive(req.body.origin + '/' + req.body.file, req.body.target + '/' + req.body.file, function(err){
-		if (err) {
-   		 throw err;
-  		}
+	var filePath = req.body.origin + '/' + req.body.file;
 
-  		fs.rmrf(req.body.origin + '/' + req.body.file, function(err){
-  			if (err) {
-   		 		throw err;
-  			}
-  			res.send('OK');
-  		});
-			
-	});
+	if(isDir(filePath)){
+
+		fs.copyRecursive(filePath, req.body.target + '/' + req.body.file, function(err){
+			if (err) {
+				console.log(err);
+	   			throw err;
+	  		}
+	  		console.log('Copy dir ok!')
+	  		res.send('OK');
+				
+		});
+
+	} else {
+		fs.copy(filePath, req.body.target + '/' + req.body.file, function(err){
+			if (err) {
+				console.log(err);	
+	   			throw err;
+	  		}
+	  		console.log('Copy file ok!')
+	  		res.send('OK');
+				
+		});
+	}	
+
+	
 
 	
 });
 
+app.delete('/api/file', function(req, res){
+	var filePath =  req.query.path;
+	
+	if(isDir(filePath)) {
+		fs.rmrf(filePath, function(err){
+			if (err) {
+				console.log(err);
+		 		throw err;
+			}
+			console.log('delete dir ok!')
+			res.send('OK');
+		});
+	} else {
+		fs.unlink(filePath, function(err){
+			if (err) {
+				console.log(err);
+		 		throw err;
+			}
+			console.log('delete file ok!')
+			res.send('OK');
+		});
+	}
+
+});
+
 app.use(express.static(__dirname + "/www"));
+
+
 
 
 function getRecursive(dir){
@@ -64,7 +110,12 @@ function getRecursive(dir){
 	for(var i = 0; i < files.length; i ++) {
 		var fileName = files[i];
 		var fullPath = dir + '/' + fileName;
-		var isDir = fs.lstatSync(fullPath).isDirectory();
+		var isDirectory = isDir(fullPath);
+		var isHidden = /^\./.test(fileName);
+
+		if(isHidden) {
+			continue;
+		}
 
 		var fileDto = {
 			label: fileName,			
@@ -74,7 +125,7 @@ function getRecursive(dir){
 			children: []
 		}
 
-		if(isDir) {
+		if(isDirectory) {
 			var children = getRecursive(fullPath);
 			fileDto.children = fileDto.children.concat(children);		
 		}
