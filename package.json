@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
   	"start-linux" : "nodejs app/app.js conf/linuxProp.json",
-  	"start-mac" : "node app/app.js conf/macProp.json"
+  	"start-mac" : "node-debug app/app.js conf/macProp.json"
   },
   "dependencies": {
     "express": "4.8.1",

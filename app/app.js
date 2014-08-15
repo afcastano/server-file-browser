@@ -45,63 +45,81 @@ app.post('/api/copy', function(req, res){
 
 	var filePath = req.body.origin + '/' + req.body.file;
 
-	if(isDir(filePath)){
+	try {
 
-		fs.copyRecursive(filePath, req.body.target + '/' + req.body.file, function(err){
-			if (err) {
-				console.log(err);
-	   			throw err;
-	  		}
-	  		console.log('Copy dir ok!')
-	  		res.send('OK');
-				
-		});
 
-	} else {
-		fs.copy(filePath, req.body.target + '/' + req.body.file, function(err){
-			if (err) {
-				console.log(err);	
-	   			throw err;
-	  		}
-	  		console.log('Copy file ok!')
-	  		res.send('OK');
-				
-		});
-	}	
+		if(isDir(filePath)){
 
+			fs.copyRecursive(filePath, req.body.target + '/' + req.body.file, function(err){
+				if (err) {
+					console.log("Error thrown on copy " + err);
+		   			res.status(500).send(err.message);
+		   			return;
+		  		}
+		  		console.log('Copy dir ok!')
+		  		res.send('OK');
+					
+			});
+
+		} else {
+			fs.copy(filePath, req.body.target + '/' + req.body.file, function(err){
+				if (err) {
+					console.log("Error thrown on copy " + err);
+		   			res.status(500).send(err.message);
+		   			return;
+		  		}
+		  		console.log('Copy file ok!')
+		  		res.send('OK');
+					
+			});
+		}	
+
+	}catch(err) {
+		console.log("Error thrown on copy" + err);
+		res.status(500).send(err.message);
+		return;
+	}
 	
 
 	
 });
 
 app.delete('/api/file', function(req, res){
-	var filePath =  req.query.path;
-	
-	if(isDir(filePath)) {
-		fs.rmrf(filePath, function(err){
-			if (err) {
-				console.log(err);
-		 		throw err;
-			}
-			console.log('delete dir ok!')
-			res.send('OK');
-		});
-	} else {
-		fs.unlink(filePath, function(err){
-			if (err) {
-				console.log(err);
-		 		throw err;
-			}
-			console.log('delete file ok!')
-			res.send('OK');
-		});
+	try {
+
+		var filePath =  req.query.path;
+		
+		if(isDir(filePath)) {
+			fs.rmrf(filePath, function(err){
+				if (err) {
+					console.log("Error thrown deleting " + err);
+			 		res.status(500).send(err.message);
+					return;
+				}
+				console.log('delete dir ok!')
+				res.send('OK');
+			});
+		} else {
+			fs.unlink(filePath, function(err){
+				if (err) {
+					console.log("Error thrown deleting " + err);
+			 		res.status(500).send(err.message);
+					return;
+				}
+				console.log('delete file ok!')
+				res.send('OK');
+			});
+		}
+
+	}catch(err) {
+		console.log("Error thrown deleting " + err);
+		res.status(500).send(err.message);
+		return;
 	}
 
 });
 
 app.use(express.static(__dirname + "/www"));
-
-
 
 
 function getRecursive(dir){
