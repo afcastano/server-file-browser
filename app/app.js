@@ -120,8 +120,8 @@ function getRecursive(dir){
 		var fileDto = {
 			label: fileName,			
 			id: fullPath,
+			isDir: isDirectory,
 			dir: dir,
-			isDir: isDir,
 			children: []
 		}
 
