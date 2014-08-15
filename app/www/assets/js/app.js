@@ -6,10 +6,10 @@ angular.module('server-explorer', ['angularTreeview'])
 		$scope.initialize = function() {
 			$http.get('/api/defaultpath').success(function(data){
 				//$scope.treedata = data;
-					$scope.origin = data.origin;
+					$scope.rootOrigin = data.origin;
 					$scope.originDir = data.origin;
-					$scope.target = data.target;
-					$scope.targetDir = $scope.target;
+					$scope.rootTarget = data.target;
+					$scope.targetDir = data.target;
 			});
 
 			$http.get('/api/version').success(function(data){
@@ -41,24 +41,32 @@ angular.module('server-explorer', ['angularTreeview'])
 		};
 
 		$scope.loadOriginFiles = function() {
-			$http.get('/api/list?dir=' + $scope.origin).success(function(data){
+			$http.get('/api/list?dir=' + $scope.rootOrigin).success(function(data){
 				$scope.origindata = data;
 			});
 		};
 
 		$scope.loadTargetFiles = function() {
-			$http.get('/api/list?dir=' + $scope.target).success(function(data){
+			$http.get('/api/list?dir=' + $scope.rootTarget).success(function(data){
 				$scope.targetdata = data;
 			});
 		};
 
-		$scope.moveFile = function() {
-			$http.post('/api/move', {origin: $scope.originDir, target: $scope.targetDir, file: $scope.originFile})
+		$scope.copyFile = function() {
+			$http.post('/api/copy', {origin: $scope.originDir, target: $scope.targetDir, file: $scope.originFile})
 			.success(function(){
 				$scope.loadOriginFiles();
 				$scope.loadTargetFiles();
 			});
-		}
+		};
+
+		$scope.deleteFile = function() {
+			$http.delete('/api/file?path=' + $scope.originDir + '/' + $scope.originFile)
+			.success(function(){
+				$scope.loadOriginFiles();
+				$scope.loadTargetFiles();
+			});
+		};
 
 
 	}

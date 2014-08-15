@@ -33,7 +33,7 @@
 						<div class="panel-heading">
 	    					<div class="row">
 	    						<div class="col-md-10">
-	    							<input type="text" class="form-control input-normal ng-pristine ng-valid" ng-model="origin">
+	    							<input type="text" class="form-control input-normal ng-pristine ng-valid" ng-model="rootOrigin"></input>
 	    						</div>
 
 
@@ -73,7 +73,7 @@
 						<div class="panel-heading">
 	    					<div class="row">
 	    						<div class="col-md-10">
-	    							<input type="text" class="form-control input-normal ng-pristine ng-valid" ng-model="target">
+	    							<input type="text" class="form-control input-normal ng-pristine ng-valid" ng-model="rootTarget"></input>
 	    						</div>
 
 
@@ -102,8 +102,11 @@
 
 		</div>
 		<div class="row">
-			<div class="col-md-2" style="padding-left: 30px;">
-				<button type="button" ng-click="moveFile()" class="btn btn-primary">Move</button>
+			<div class="col-md-1" style="padding-left: 30px;">
+				<button type="button" ng-click="copyFile()" class="btn btn-primary">Copy</button>
+			</div>
+			<div class="col-md-1" style="padding-left: 30px;">
+				<button type="button" ng-click="deleteFile()" class="btn btn-default">Delete</button>
 			</div>
 		</div>
 	</div>
