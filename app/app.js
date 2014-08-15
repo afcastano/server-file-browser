@@ -121,7 +121,7 @@ function getRecursive(dir){
 			label: fileName,			
 			id: fullPath,
 			dir: dir,
-			isDir: isDir,
+			isDir: isDirectory,
 			children: []
 		}
 
