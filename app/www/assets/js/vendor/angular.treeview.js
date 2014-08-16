@@ -28,6 +28,10 @@
 	angular.module( 'angularTreeview', [] ).directive( 'treeModel', ['$compile', function( $compile ) {
 		return {
 			restrict: 'A',
+			// scope: {
+			// 	onNodeExpanded: '&',
+			// 	treeModel: '@'
+			// },
 			link: function ( scope, element, attrs ) {
 				//tree id
 				var treeId = attrs.treeId;
@@ -44,13 +48,16 @@
 				//children
 				var nodeChildren = attrs.nodeChildren || 'children';
 
+				//Node expanded callback
+				var onNodeExpanded = attrs.onNodeExpanded || 'onNodeExpanded';
+
 				//tree template
 				var template =
 					'<ul>' +
 						'<li data-ng-repeat="node in ' + treeModel + '">' +
-							'<i class="collapsed" data-ng-show="node.' + nodeChildren + '.length && node.collapsed" data-ng-click="' + treeId + '.selectNodeHead(node)"></i>' +
-							'<i class="expanded" data-ng-show="node.' + nodeChildren + '.length && !node.collapsed" data-ng-click="' + treeId + '.selectNodeHead(node)"></i>' +
-							'<i class="normal" data-ng-hide="node.' + nodeChildren + '.length"></i> ' +
+							'<i class="collapsed" data-ng-show="node.isDir && node.collapsed" data-ng-click="' + treeId + '.selectNodeHead(node)"></i>' +
+							'<i class="expanded" data-ng-show="node.isDir && !node.collapsed" data-ng-click="' + treeId + '.selectNodeHead(node)"></i>' +
+							'<i class="normal" data-ng-hide="node.isDir"></i> ' +
 							'<span data-ng-class="node.selected" data-ng-click="' + treeId + '.selectNodeLabel(node)">{{node.' + nodeLabel + '}}</span>' +
 							'<div data-ng-hide="node.collapsed" data-tree-id="' + treeId + '" data-tree-model="node.' + nodeChildren + '" data-node-id=' + nodeId + ' data-node-label=' + nodeLabel + ' data-node-children=' + nodeChildren + '></div>' +
 						'</li>' +
@@ -71,6 +78,11 @@
 
 							//Collapse or Expand
 							selectedNode.collapsed = !selectedNode.collapsed;
+
+							if(!selectedNode.collapsed) {
+								scope[onNodeExpanded](selectedNode);
+							}
+
 						};
 
 						//if node label clicks,
