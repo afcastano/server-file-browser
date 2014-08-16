@@ -1,5 +1,44 @@
 "use strict";
 angular.module('server-explorer', ['angularTreeview'])
+.config(['$httpProvider', function($httpProvider){
+
+	var interceptor = ['$q', '$injector', function($q, $injector){
+
+		function success(response) {
+            // get $http via $injector because of circular dependency problem
+            var $http = $http || $injector.get('$http');
+            if($http.pendingRequests.length < 1) {
+                $('#loadingWidget').modal('hide');
+            }
+            return response;
+        }
+
+        function error(response) {
+            // get $http via $injector because of circular dependency problem
+            var $http = $http || $injector.get('$http');
+            if($http.pendingRequests.length < 1) {
+                $('#loadingWidget').modal('hide');
+            }
+            return $q.reject(response);
+        }
+
+    	return function (promise) {
+	        return promise.then(success, error);
+	    }
+
+
+	}];
+
+	$httpProvider.responseInterceptors.push(interceptor);
+
+	var spinnerFunction = function spinnerFunction(data, headersGetter) {
+	    $("#loadingWidget").modal('show');
+	    return data;
+  	};
+
+	$httpProvider.defaults.transformRequest.push(spinnerFunction);
+
+}])
 .controller('filesController', ['$scope', '$http', 
 	function($scope, $http) {
 		$scope.initialize = function() {

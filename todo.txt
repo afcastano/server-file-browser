@@ -4,10 +4,10 @@ FileBrowser
 - Connect to git
 + Set up simple password
 + Load the whole list
-+ Find a way to better read the path.
+- Find a way to better read the path.
 - Load the collapsed tree
 - When a dir is empty, show the folder instead of the file.
-+ Control when lots of files are loaded. Maybe load only files and dirs and then load contents on demand.
+- Control when lots of files are loaded. Maybe load only files and dirs and then load contents on demand.
 + Make it async
 - Dont show hidden files
 - Dont fail if it cant delete
@@ -16,3 +16,5 @@ FileBrowser
 - Delete not empty dirs
 + Preserve collapsed status on session
 + Preserve collapsed status when default path is the same.
++ Make modal smaller
++ Avoid modal flickering

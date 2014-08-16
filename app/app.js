@@ -21,9 +21,11 @@ app.use( bodyParser.urlencoded({
 
 app.get('/api/list', function(req, res){
 
-	var structure = getContents(req.query.dir);
-
-	res.send(structure);
+	getContents(req.query.dir, function (content){
+		// setTimeout(function(){
+			res.send(content);
+		// }, 5000);	
+	});
 	
 });
 
@@ -121,31 +123,33 @@ app.delete('/api/file', function(req, res){
 
 app.use(express.static(__dirname + "/www"));
 
-function getContents(dir) {
-	var contents = [];
-	var files = fs.readdirSync(dir);
-	for(var i = 0; i < files.length; i ++) {
-		var fileName = files[i];
-		var fullPath = dir + '/' + fileName;
-		var isDirectory = isDir(fullPath);
-		var isHidden = /^\./.test(fileName);
+function getContents(dir, cb) {
+	fs.readdir(dir,function(err, files){
+		var contents = [];
+		files = files || [];
+		for(var i = 0; i < files.length; i ++) {
+			var fileName = files[i];
+			var fullPath = dir + '/' + fileName;
+			var isDirectory = isDir(fullPath);
+			var isHidden = /^\./.test(fileName);
 
-		if(isHidden) {
-			continue;
+			if(isHidden) {
+				continue;
+			}
+
+			var fileDto = {
+				label: fileName,			
+				id: fullPath,
+				isDir: isDirectory,
+				dir: dir,
+				children: []
+			}
+
+			contents.push(fileDto);
 		}
 
-		var fileDto = {
-			label: fileName,			
-			id: fullPath,
-			isDir: isDirectory,
-			dir: dir,
-			children: []
-		}
-
-		contents.push(fileDto);
-	}
-
-	return contents;	
+		cb(contents);	
+	});
 }
 
 function getRecursive(dir){
