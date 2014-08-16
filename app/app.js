@@ -21,7 +21,7 @@ app.use( bodyParser.urlencoded({
 
 app.get('/api/list', function(req, res){
 
-	var structure = getRecursive(req.query.dir);
+	var structure = getContents(req.query.dir);
 
 	res.send(structure);
 	
@@ -121,6 +121,32 @@ app.delete('/api/file', function(req, res){
 
 app.use(express.static(__dirname + "/www"));
 
+function getContents(dir) {
+	var contents = [];
+	var files = fs.readdirSync(dir);
+	for(var i = 0; i < files.length; i ++) {
+		var fileName = files[i];
+		var fullPath = dir + '/' + fileName;
+		var isDirectory = isDir(fullPath);
+		var isHidden = /^\./.test(fileName);
+
+		if(isHidden) {
+			continue;
+		}
+
+		var fileDto = {
+			label: fileName,			
+			id: fullPath,
+			isDir: isDirectory,
+			dir: dir,
+			children: []
+		}
+
+		contents.push(fileDto);
+	}
+
+	return contents;	
+}
 
 function getRecursive(dir){
 	var contents = [];

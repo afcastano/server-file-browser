@@ -28,6 +28,10 @@
 	angular.module( 'angularTreeview', [] ).directive( 'treeModel', ['$compile', function( $compile ) {
 		return {
 			restrict: 'A',
+			// scope: {
+			// 	onNodeExpanded: '&',
+			// 	treeModel: '@'
+			// },
 			link: function ( scope, element, attrs ) {
 				//tree id
 				var treeId = attrs.treeId;
@@ -43,6 +47,9 @@
 
 				//children
 				var nodeChildren = attrs.nodeChildren || 'children';
+
+				//Node expanded callback
+				var onNodeExpanded = attrs.onNodeExpanded || 'onNodeExpanded';
 
 				//tree template
 				var template =
@@ -71,6 +78,11 @@
 
 							//Collapse or Expand
 							selectedNode.collapsed = !selectedNode.collapsed;
+
+							if(!selectedNode.collapsed) {
+								scope[onNodeExpanded](selectedNode);
+							}
+
 						};
 
 						//if node label clicks,

@@ -2,7 +2,6 @@
 angular.module('server-explorer', ['angularTreeview'])
 .controller('filesController', ['$scope', '$http', 
 	function($scope, $http) {
-		
 		$scope.initialize = function() {
 			$http.get('/api/defaultpath').success(function(data){
 				//$scope.treedata = data;
@@ -38,6 +37,17 @@ angular.module('server-explorer', ['angularTreeview'])
 			    }
 			}, false);
 
+		};
+
+		$scope.onNodeExpanded = function(node) {
+			$http.get('/api/list?dir=' + node.id).success(function(data){
+
+				$scope.collapseAll(data);
+
+				node.children = data;
+			}).error(function(err){
+				alert('Error: ' + err);
+			});
 		};
 
 		$scope.collapseAll = function(data) {
