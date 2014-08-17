@@ -6,6 +6,8 @@ angular.module('server-explorer', ['angularTreeview', 'btford.socket-io'])
 .controller('filesController', ['$scope', '$http', 'serverSocket',
 	function($scope, $http, serverSocket) {
 
+		$scope.dialogText = "Loading...";
+
 		$scope.initialize = function() {
 			$http.get('/api/defaultpath').success(function(data){
 				//$scope.treedata = data;
@@ -100,21 +102,25 @@ angular.module('server-explorer', ['angularTreeview', 'btford.socket-io'])
 			$scope.loadOriginFiles();
 			$scope.loadTargetFiles();
 			$('#loadingWidget').modal('hide');
+			$scope.dialogText = "Loading...";
 		});
 
 		serverSocket.on('copyError', function(err){
 			console.log(err);
 			$('#loadingWidget').modal('hide');
+			$scope.dialogText = "Loading...";
 			alert('Error: ' + err);
+
+		});
+
+		serverSocket.on('copyProgress', function(data){
+			var percentage = Math.floor((data.copied/data.total)*100);
+			$scope.dialogText='Transfered ' + percentage + '%';
 		});
 
 		$scope.copyFile = function() {
 			$('#loadingWidget').modal('show');
 			$http.post('/api/copy', {origin: $scope.originDir, target: $scope.targetDir, file: $scope.originFile})
-			// .success(function(){
-			// 	$scope.loadOriginFiles();
-			// 	$scope.loadTargetFiles();
-			// })
 			.error(function(err){
 				$('#loadingWidget').modal('hide');
 				alert('Error: ' + err);

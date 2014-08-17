@@ -20,6 +20,13 @@ var stats = function(filePath) {
 	};
 }
 
+var monitorFile = function(file, totalSize) {
+	return setInterval(function(){
+		var data = stats(file);
+		io.sockets.emit('copyProgress', {copied: data.size, total: totalSize});		
+	}, 100);
+}
+
 var isDir = function(filePath) {
 	return stats(filePath).isDir;
 }
@@ -57,32 +64,38 @@ app.post('/api/copy', function(req, res){
 	console.log(req.body.file);
 
 	var filePath = req.body.origin + '/' + req.body.file;
+	var targetPath = req.body.target + '/' + req.body.file;
 	res.send('OK');
-	console.log('start copying')
+	
 	try {
 
+		var data = stats(filePath);
+		var interval = monitorFile(targetPath, data.size);
+		console.log('start copying');
 
-		if(isDir(filePath)){
+		if(data.isDir){
 
-			fs.copyRecursive(filePath, req.body.target + '/' + req.body.file, function(err){
+			fs.copyRecursive(filePath, targetPath, function(err){
 				if (err) {
 					console.log("Error thrown on copy " + err);
 		   			io.sockets.emit('copyError',err.message);
 		   			return;
 		  		}
-		  		console.log('Copy dir ok!')
+		  		console.log('Copy dir ok!');
+		  		clearInterval(interval);
 				io.sockets.emit('copyEnd',req.body.file);	
 			});
 
 		} else {
 			// setTimeout(function(){
-				fs.copy(filePath, req.body.target + '/' + req.body.file, function(err){
+				fs.copy(filePath, targetPath, function(err){
 					if (err) {
 						console.log("Error thrown on copy " + err);
 			   			io.sockets.emit('copyError',err.message);
 			   			return;
 			  		}
-			  		console.log('Copy file ok!')
+			  		console.log('Copy file ok!');
+			  		clearInterval(interval);
 			  		io.sockets.emit('copyEnd',req.body.file);
 						
 				});
