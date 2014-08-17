@@ -1,46 +1,13 @@
 "use strict";
-angular.module('server-explorer', ['angularTreeview'])
-.config(['$httpProvider', function($httpProvider){
-
-	var interceptor = ['$q', '$injector', function($q, $injector){
-
-		function success(response) {
-            // get $http via $injector because of circular dependency problem
-            var $http = $http || $injector.get('$http');
-            if($http.pendingRequests.length < 1) {
-                $('#loadingWidget').modal('hide');
-            }
-            return response;
-        }
-
-        function error(response) {
-            // get $http via $injector because of circular dependency problem
-            var $http = $http || $injector.get('$http');
-            if($http.pendingRequests.length < 1) {
-                $('#loadingWidget').modal('hide');
-            }
-            return $q.reject(response);
-        }
-
-    	return function (promise) {
-	        return promise.then(success, error);
-	    }
-
-
-	}];
-
-	$httpProvider.responseInterceptors.push(interceptor);
-
-	var spinnerFunction = function spinnerFunction(data, headersGetter) {
-	    $("#loadingWidget").modal('show');
-	    return data;
-  	};
-
-	$httpProvider.defaults.transformRequest.push(spinnerFunction);
-
+angular.module('server-explorer', ['angularTreeview', 'btford.socket-io'])
+.factory('serverSocket', ['socketFactory', function(socketFactory){
+	return socketFactory();
 }])
-.controller('filesController', ['$scope', '$http', 
-	function($scope, $http) {
+.controller('filesController', ['$scope', '$http', 'serverSocket',
+	function($scope, $http, serverSocket) {
+
+		$scope.dialogText = "Loading...";
+
 		$scope.initialize = function() {
 			$http.get('/api/defaultpath').success(function(data){
 				//$scope.treedata = data;
@@ -79,13 +46,17 @@ angular.module('server-explorer', ['angularTreeview'])
 		};
 
 		$scope.onNodeExpanded = function(node) {
+			$('#loadingWidget').modal('show');
 			$http.get('/api/list?dir=' + node.id).success(function(data){
 
 				$scope.collapseAll(data);
 
 				node.children = data;
+				$('#loadingWidget').modal('hide');
 			}).error(function(err){
+				$('#loadingWidget').modal('hide');
 				alert('Error: ' + err);
+				
 			});
 		};
 
@@ -100,40 +71,70 @@ angular.module('server-explorer', ['angularTreeview'])
 		};
 
 		$scope.loadOriginFiles = function() {
+			$('#loadingWidget').modal('show');
 			$http.get('/api/list?dir=' + $scope.rootOrigin).success(function(data){
 
 				$scope.collapseAll(data);
 
 				$scope.origindata = data;
+				$('#loadingWidget').modal('hide');
 			}).error(function(err){
+				$('#loadingWidget').modal('hide');
 				alert('Error: ' + err);
+				
 			});
 		};
 
 		$scope.loadTargetFiles = function() {
+			$('#loadingWidget').modal('show');
 			$http.get('/api/list?dir=' + $scope.rootTarget).success(function(data){
 				$scope.collapseAll(data);
 				$scope.targetdata = data;
+				$('#loadingWidget').modal('hide');
 			}).error(function(err){
+				$('#loadingWidget').modal('hide');
 				alert('Error: ' + err);
 			});
 		};
 
+		serverSocket.on('copyEnd', function(msg){
+			console.log('Copy OK: ' + msg);
+			$scope.loadOriginFiles();
+			$scope.loadTargetFiles();
+			$('#loadingWidget').modal('hide');
+			$scope.dialogText = "Loading...";
+		});
+
+		serverSocket.on('copyError', function(err){
+			console.log(err);
+			$('#loadingWidget').modal('hide');
+			$scope.dialogText = "Loading...";
+			alert('Error: ' + err);
+
+		});
+
+		serverSocket.on('copyProgress', function(data){
+			var percentage = Math.floor((data.copied/data.total)*100);
+			$scope.dialogText='Transfered ' + percentage + '%';
+		});
+
 		$scope.copyFile = function() {
+			$('#loadingWidget').modal('show');
 			$http.post('/api/copy', {origin: $scope.originDir, target: $scope.targetDir, file: $scope.originFile})
-			.success(function(){
-				$scope.loadOriginFiles();
-				$scope.loadTargetFiles();
-			}).error(function(err){
+			.error(function(err){
+				$('#loadingWidget').modal('hide');
 				alert('Error: ' + err);
 			});
 		};
 
 		$scope.deleteFile = function() {
+			$('#loadingWidget').modal('show');
 			$http.delete('/api/file?path=' + $scope.originDir + '/' + $scope.originFile)
 			.success(function(){
+				$('#loadingWidget').modal('hide');
 				$scope.loadOriginFiles();
 			}).error(function(err){
+				$('#loadingWidget').modal('hide');
 				alert('Error: ' + err);
 			});
 		};

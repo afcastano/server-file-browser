@@ -2,6 +2,8 @@ var express = require('express');
 
 var fs = require('fs.extra');
 var app = express();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
 var env = require(__dirname + '/../' + process.argv[2]);
 var versionProp = require(__dirname + '/../package.json');
 
@@ -9,8 +11,24 @@ var versionProp = require(__dirname + '/../package.json');
 
 var bodyParser = require('body-parser');
 
+var stats = function(filePath) {
+	var stats = fs.lstatSync(filePath); 
+
+	return {
+		isDir: stats.isDirectory(),
+		size: stats.size 
+	};
+}
+
+var monitorFile = function(file, totalSize) {
+	return setInterval(function(){
+		var data = stats(file);
+		io.sockets.emit('copyProgress', {copied: data.size, total: totalSize});		
+	}, 100);
+}
+
 var isDir = function(filePath) {
-	return fs.lstatSync(filePath).isDirectory();
+	return stats(filePath).isDir;
 }
 
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
@@ -22,9 +40,9 @@ app.use( bodyParser.urlencoded({
 app.get('/api/list', function(req, res){
 
 	getContents(req.query.dir, function (content){
-		// setTimeout(function(){
+		
 			res.send(content);
-		// }, 5000);	
+			
 	});
 	
 });
@@ -46,39 +64,47 @@ app.post('/api/copy', function(req, res){
 	console.log(req.body.file);
 
 	var filePath = req.body.origin + '/' + req.body.file;
-
+	var targetPath = req.body.target + '/' + req.body.file;
+	res.send('OK');
+	
 	try {
 
+		var data = stats(filePath);
+		var interval = monitorFile(targetPath, data.size);
+		console.log('start copying');
 
-		if(isDir(filePath)){
+		if(data.isDir){
 
-			fs.copyRecursive(filePath, req.body.target + '/' + req.body.file, function(err){
+			fs.copyRecursive(filePath, targetPath, function(err){
 				if (err) {
 					console.log("Error thrown on copy " + err);
-		   			res.status(500).send(err.message);
+		   			io.sockets.emit('copyError',err.message);
 		   			return;
 		  		}
-		  		console.log('Copy dir ok!')
-		  		res.send('OK');
-					
+		  		console.log('Copy dir ok!');
+		  		clearInterval(interval);
+				io.sockets.emit('copyEnd',req.body.file);	
 			});
 
 		} else {
-			fs.copy(filePath, req.body.target + '/' + req.body.file, function(err){
-				if (err) {
-					console.log("Error thrown on copy " + err);
-		   			res.status(500).send(err.message);
-		   			return;
-		  		}
-		  		console.log('Copy file ok!')
-		  		res.send('OK');
-					
-			});
+			// setTimeout(function(){
+				fs.copy(filePath, targetPath, function(err){
+					if (err) {
+						console.log("Error thrown on copy " + err);
+			   			io.sockets.emit('copyError',err.message);
+			   			return;
+			  		}
+			  		console.log('Copy file ok!');
+			  		clearInterval(interval);
+			  		io.sockets.emit('copyEnd',req.body.file);
+						
+				});
+			// }, 5000);
 		}	
 
 	}catch(err) {
-		console.log("Error thrown on copy" + err);
-		res.status(500).send(err.message);
+		console.log("Error thrown on copy " + err);
+		io.sockets.emit('copyError',err.message);
 		return;
 	}
 	
@@ -130,7 +156,8 @@ function getContents(dir, cb) {
 		for(var i = 0; i < files.length; i ++) {
 			var fileName = files[i];
 			var fullPath = dir + '/' + fileName;
-			var isDirectory = isDir(fullPath);
+
+			var data = stats(fullPath);
 			var isHidden = /^\./.test(fileName);
 
 			if(isHidden) {
@@ -140,7 +167,8 @@ function getContents(dir, cb) {
 			var fileDto = {
 				label: fileName,			
 				id: fullPath,
-				isDir: isDirectory,
+				isDir: data.isDir,
+				size: data.size,
 				dir: dir,
 				children: []
 			}
@@ -158,7 +186,7 @@ function getRecursive(dir){
 	for(var i = 0; i < files.length; i ++) {
 		var fileName = files[i];
 		var fullPath = dir + '/' + fileName;
-		var isDirectory = isDir(fullPath);
+		var data = stats(fullPath);
 		var isHidden = /^\./.test(fileName);
 
 		if(isHidden) {
@@ -168,7 +196,8 @@ function getRecursive(dir){
 		var fileDto = {
 			label: fileName,			
 			id: fullPath,
-			isDir: isDirectory,
+			isDir: data.isDir,
+			size: data.size,
 			dir: dir,
 			children: []
 		}
@@ -184,6 +213,11 @@ function getRecursive(dir){
 	return contents;
 }
 
-var server = app.listen(3000, function() {
+io.on('connection', function(socket){
+	console.log('A user connected');
+	
+});
+
+var server = http.listen(3000, function() {
     console.log('Listening on port %d', server.address().port);
 });

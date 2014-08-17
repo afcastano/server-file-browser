@@ -1,16 +1,17 @@
 {
   "name": "hello-world",
   "description": "hello world test app",
-  "version": "0.0.1",
+  "version": "v0.1.2-01",
   "private": true,
   "scripts": {
-  	"start-linux" : "nodejs app/app.js conf/linuxProp.json",
-  	"start-mac" : "node-debug app/app.js conf/macProp.json"
+    "start-linux": "nodejs app/app.js conf/linuxProp.json",
+    "start-mac": "node app/app.js conf/macProp.json",
+    "debug-mac": "node-debug app/app.js conf/macProp.json"
   },
   "dependencies": {
-    "express": "4.8.1",
     "body-parser": "1.6.3",
-    "fs.extra": "1.2.1"
-  },
-  "version": "v0.1.2"
+    "express": "4.8.1",
+    "fs.extra": "1.2.1",
+    "socket.io": "^1.0.6"
+  }
 }
