@@ -6,7 +6,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var env = require(__dirname + '/../' + process.argv[2]);
 var versionProp = require(__dirname + '/../package.json');
-
+var async = require('async');
 
 
 var bodyParser = require('body-parser');
@@ -23,8 +23,29 @@ var stats = function(filePath) {
 var monitorFile = function(file, totalSize) {
 	return setInterval(function(){
 		var data = stats(file);
-		io.sockets.emit('copyProgress', {copied: data.size, total: totalSize});		
-	}, 100);
+		if(data.isDir) {
+
+			getDirStats(file, function (err, data){
+				
+				if (err) {
+					console.log("Error thrown on copy " + err);
+		   			io.sockets.emit('copyError',err.message);
+		   			return;
+		  		}
+
+		  		if(data === undefined) {
+		  			return;
+		  		}
+
+				console.log('Size: ' + data.size + ' files: ' + data.numberOfFiles);
+				io.sockets.emit('copyProgress', {copied: data.size, total: totalSize});	
+			});
+
+		}else {
+			io.sockets.emit('copyProgress', {copied: data.size, total: totalSize});						
+		}
+
+	}, 200);
 }
 
 var isDir = function(filePath) {
@@ -44,7 +65,7 @@ app.get('/api/list', function(req, res){
 			res.send(content);
 			
 	});
-	
+
 });
 
 app.get('/api/defaultpath', function(req, res) {
@@ -70,28 +91,41 @@ app.post('/api/copy', function(req, res){
 	try {
 
 		var data = stats(filePath);
-		var interval = monitorFile(targetPath, data.size);
 		console.log('start copying');
 
 		if(data.isDir){
 
-			fs.copyRecursive(filePath, targetPath, function(err){
+			getDirStats(filePath, function(err, dirData){
+
 				if (err) {
 					console.log("Error thrown on copy " + err);
 		   			io.sockets.emit('copyError',err.message);
 		   			return;
 		  		}
-		  		console.log('Copy dir ok!');
-		  		clearInterval(interval);
-				io.sockets.emit('copyEnd',req.body.file);	
+
+				var interval = monitorFile(targetPath, dirData.size);
+				fs.copyRecursive(filePath, targetPath, function(err){
+					if (err) {
+						console.log("Error thrown on copy " + err);
+			   			io.sockets.emit('copyError',err.message);
+			   			clearInterval(interval);
+			   			return;
+			  		}
+			  		console.log('Copy dir ok!');
+			  		clearInterval(interval);
+					io.sockets.emit('copyEnd',req.body.file);	
+				});
 			});
+
 
 		} else {
 			// setTimeout(function(){
+				var interval = monitorFile(targetPath, data.size);
 				fs.copy(filePath, targetPath, function(err){
 					if (err) {
 						console.log("Error thrown on copy " + err);
 			   			io.sockets.emit('copyError',err.message);
+			   			clearInterval(interval);
 			   			return;
 			  		}
 			  		console.log('Copy file ok!');
@@ -180,37 +214,95 @@ function getContents(dir, cb) {
 	});
 }
 
-function getRecursive(dir){
-	var contents = [];
-	var files = fs.readdirSync(dir);
-	for(var i = 0; i < files.length; i ++) {
-		var fileName = files[i];
-		var fullPath = dir + '/' + fileName;
-		var data = stats(fullPath);
-		var isHidden = /^\./.test(fileName);
-
-		if(isHidden) {
-			continue;
-		}
-
-		var fileDto = {
-			label: fileName,			
-			id: fullPath,
-			isDir: data.isDir,
-			size: data.size,
-			dir: dir,
-			children: []
-		}
-
-		if(isDirectory) {
-			var children = getRecursive(fullPath);
-			fileDto.children = fileDto.children.concat(children);		
-		}
-
-		contents.push(fileDto);
+function getDirStats(dir, cb){
+	var exists = fs.existsSync(dir);
+	if(!exists) {
+		cb(undefined,undefined);
+		return;
 	}
 
-	return contents;
+	fs.readdir(dir, function(err, files){
+
+		if(err){
+			cb(err);
+			return;	
+		}
+
+		var dirStats = {
+			id: dir,
+			numberOfFiles: 0,
+			size: 0,
+			add: function(newStats) {
+				this.numberOfFiles = this.numberOfFiles + newStats.numberOfFiles;
+				this.size = this.size + newStats.size;
+			}
+		}
+
+		var dirs = [];	
+		async.eachSeries(files, function(fileName, next){
+
+			var fullPath = dir + '/' + fileName;
+			var data = stats(fullPath);
+			var isHidden = /^\./.test(fileName);
+			if(isHidden) {
+				next();
+			}
+
+			if(data.isDir) {
+				dirs.push(fullPath);
+				next();
+			} else {
+				dirStats.numberOfFiles = dirStats.numberOfFiles + 1;
+				dirStats.size = dirStats.size + data.size;
+				next();
+			}
+
+		}, function(err){
+			if(err){
+				cb(err);
+				return;	
+			}
+		});
+
+		var totalDirs = dirs.length;
+
+		if(totalDirs == 0) {
+			cb(undefined, dirStats);
+			return;
+		}
+
+		async.each(dirs, function(curr, next){
+			getDirStats(curr, function(err, newStats){
+
+				if(err) {
+					cb(err);
+					return;
+				}
+
+				dirStats.add(newStats);
+				totalDirs = totalDirs - 1;
+
+				if(totalDirs === 0) {
+					cb(undefined, dirStats);	
+				}
+				
+			});
+
+			next();
+
+		}, function(err){
+			if(err){
+				cb(err);
+				return;
+			}
+		});
+
+		
+
+		
+
+	});
+
 }
 
 io.on('connection', function(socket){
