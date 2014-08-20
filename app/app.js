@@ -16,29 +16,25 @@ var bodyParser = require('body-parser');
 
 function fullStat(path) {
 
-	var deferred = Q.defer();
-
 	qfs.exists(path).then(function(exists){
 		if(!exists) {
+			var deferred = Q.defer();
 			deferred.resolve(undefined);
+			return deferred.promise;
 		}
 	});
 
-	qfs.stat(path).then(function(stats){
+	return qfs.stat(path).then(function(stats){
 		if(stats.isDirectory()){	
-			deferred.resolve(dirStat(path));
+			return dirStat(path);
 		}else{
-			deferred.resolve(fileDto(undefined, path, stats));
+			return fileDto(undefined, path, stats);
 		}
-	}).fail(deferred.reject);
-
-	return deferred.promise;
+	});
 }
 
 function dirStat(path) {
-	var deferred = Q.defer();
-
-	listDirFiles(path, true)
+	return listDirFiles(path, true)
 	.then(function(filesDto){
 
 		var promises = [];
@@ -56,17 +52,17 @@ function dirStat(path) {
 			}
 		});
 
-		Q.all(promises).then(function(subDirStats){
+		return Q.all(promises).then(function(subDirStats){
 			_.each(subDirStats, function(subDirStat){
 				totalStat.size = totalStat.size + subDirStat.size;	
 			});
-			deferred.resolve(totalStat);
 
-		}).fail(deferred.reject);
+			return totalStat;
 
-	}).fail(deferred.reject);
+		});
 
-	return deferred.promise;
+	});
+
 }
 
 var monitorFile = function(file, totalSize) {
@@ -95,9 +91,7 @@ app.use( bodyParser.urlencoded({
 
 
 function listDirFiles(path, includeHidden) {
-	var deferred = Q.defer();
-
-	qfs.list(path)
+	return qfs.list(path)
 	.then(function(files){
 		
 		var promises = _.chain(files)
@@ -113,12 +107,9 @@ function listDirFiles(path, includeHidden) {
 			return loadFileDto(fileName, path);
 		}).value();
 
-		Q.all(promises).then(deferred.resolve)
-		.fail(deferred.reject);
+		return Q.all(promises);
 			
-	}).fail(deferred.reject);
-
-	return deferred.promise;
+	});
 }
 
 app.get('/api/list', function(req, res){
@@ -129,7 +120,7 @@ app.get('/api/list', function(req, res){
 		res.send(result);
 	})
 	.fail(function(err){
-		console.log(err);
+		console.log(err.stack);
 		res.status(500).send(err.message);	
 	});	 
 
@@ -141,17 +132,9 @@ function isHidden(path) {
 }
 
 function loadFileDto(fileName, dir){
-	var deferred = Q.defer();
-
-	var fullPath = dir + '/' + fileName;
-	
-	qfs.stat(fullPath).then(function(stats){
-		deferred.resolve(fileDto(fileName, dir, stats));
-	}).fail(function(err){
-		deferred.reject(err);
+	return qfs.stat(dir+'/'+fileName).then(function(stats){
+		return fileDto(fileName, dir, stats);
 	});
-
-	return deferred.promise;
 };
 
 function fileDto(fileName, dir, stats) {
@@ -183,11 +166,9 @@ app.post('/api/copy', function(req, res){
 	res.send('OK');
 
 	fullStat(filePath).then(function(fullStats){
-		if(fullStats.isDir){
-			copyDir(filePath, targetPath, fullStats);
-		} else {
-			copyFile(filePath, targetPath, fullStats);
-		}
+
+		return fullStats.isDir ? copyDir(filePath, targetPath, fullStats) : copyFile(filePath, targetPath, fullStats);
+		
 	}).fail(function(err){
 		console.log("Error thrown on copy " + err.stack);
 		io.sockets.emit('copyError', err.message);
@@ -197,28 +178,20 @@ app.post('/api/copy', function(req, res){
 
 function copyFile(originPath, targetPath, originStats) {
 	var interval = monitorFile(targetPath, originStats.size);
-	qfs.copy(originPath, targetPath).then(function(){
-		console.log('Copy file ok!');
-  		clearInterval(interval);
-  		io.sockets.emit('copyEnd', originPath);	
-	}).fail(function(err){
-		console.log("Error thrown on copy " + err.stack);
-		io.sockets.emit('copyError',err.message);
+	return qfs.copy(originPath, targetPath).then(function(){
+		io.sockets.emit('copyEnd', originPath);	
+	}).fin(function(){
 		clearInterval(interval);	
 	});	
 }
 
 function copyDir(originPath, targetPath, originStats) {
 	var interval = monitorFile(targetPath, originStats.size);
-	qfs.copyTree(originPath, targetPath).then(function(){
-  		console.log('Copy dir ok!');
-  		clearInterval(interval);
+	return qfs.copyTree(originPath, targetPath).then(function(){
 		io.sockets.emit('copyEnd', originPath);	
-	}).fail(function(err){
-		console.log("Error thrown on copy " + err.stack);
-		io.sockets.emit('copyError',err.message);
+	}).fin(function(){
 		clearInterval(interval);
-  	});
+	});
 }
 
 app.delete('/api/file', function(req, res){
@@ -229,15 +202,10 @@ app.delete('/api/file', function(req, res){
 
 		var promise = stats.isDir ? qfs.removeTree(filePath) : qfs.remove(filePath);
 
-		promise.then(function(){
+		return promise.then(function(){
 			console.log('delete ok!')
 			res.send('OK');
-		})
-		.fail(function(err){
-			console.log("Error thrown deleting " + err.stack);
-			res.status(500).send(err.message);
 		});
-
 	})
 	.fail(function(err){
 		console.log("Error thrown deleting " + err.stack);
