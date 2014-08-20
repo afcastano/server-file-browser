@@ -34,7 +34,6 @@ var monitorFile = function(originFile, targetFile) {
 		return setInterval(function(){
 
 			Files.fullStat(targetFile).then(function(targetStats){
-				console.log("Copying " + targetStats.size);
 				io.sockets.emit('copyProgress', {copied: targetStats.size, total: stats.size});	
 			
 			}).fail(function(err){
