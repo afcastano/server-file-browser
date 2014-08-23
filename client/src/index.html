@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Server Explorer</title>
+<!-- compiled CSS -->
+<% styles.forEach( function ( file ) { %>
+    <link rel="stylesheet" type="text/css" href="<%= file %>" />
+<% }); %>
+
+<!-- This script I don't know how is generated-->
+	<script src="/socket.io/socket.io.js"></script>
+
+<!-- compiled JavaScript -->
+<% scripts.forEach( function ( file ) { %>
+	<script type="text/javascript" src="<%= file %>"></script>
+<% }); %>
+  
+</head>
+<body ng-app="server-explorer" ng-controller="filesController" ng-init="initialize()">
+	<div>
+		<nav class="navbar navbar-default todo-navbar" role="navigation">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="#">Server explorer <small>{{version}}</small></a>
+				</div>
+			</div>
+		</nav>
+	</div>
+
+	<div class="container-fluid ">
+		<div class="row">
+			
+			<div class="col-md-6">
+				<div class="row">
+
+					<div class="col-md-2" style="padding-left: 30px;">
+						<h3>Origin</h3>
+					</div>
+
+				</div>
+				<div class="row">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+	    					<div class="row">
+	    						<div class="col-md-10">
+	    							<input type="text" class="form-control input-normal ng-pristine ng-valid" ng-model="rootOrigin"></input>
+	    						</div>
+
+
+	    						<div class="col-md-2" style="padding-left: 0px;">
+	    							<button type="button" class="btn btn-primary" ng-click="loadOriginFiles()">Load</button>
+	    						</div>
+	    					</div>
+	  					</div>
+	  					<div class="panel-body">
+							<div class="col-md-10" id="main_content"
+							>
+								<div
+								    data-angular-treeview="true"
+								    data-tree-id="originTree"
+								    data-tree-model="origindata"
+								    data-node-id="id"
+								    data-node-label="label"
+			    					data-node-children="children"
+			    					on-node-expanded="onNodeExpanded" >
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>	
+			</div>
+
+
+			<div class="col-md-6" >
+				<div class="row">
+
+					<div class="col-md-2">
+						<h3>Target</h3>
+					</div>
+
+				</div>
+				<div class="row">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+	    					<div class="row">
+	    						<div class="col-md-10">
+	    							<input type="text" class="form-control input-normal ng-pristine ng-valid" ng-model="rootTarget"></input>
+	    						</div>
+
+
+	    						<div class="col-md-2" style="padding-left: 0px;">
+	    							<button type="button" class="btn btn-primary" ng-click="loadTargetFiles()">Load</button>
+	    						</div>
+	    					</div>
+	  					</div>
+	  					<div class="panel-body">
+							<div class="col-md-10" id="main_content"
+							>
+								<div
+								    data-angular-treeview="true"
+								    data-tree-id="targetTree"
+								    data-tree-model="targetdata"
+								    data-node-id="id"
+								    data-node-label="label"
+			    					data-node-children="children"
+			    					on-node-expanded="onNodeExpanded" >
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>	
+			</div>
+
+
+		</div>
+		<div class="row">
+
+			<div class="btn-group" style="padding-left: 15px;">
+			  <button type="button" ng-click="copyFile()" class="btn btn-default">Copy</button>
+			  <button type="button" ng-click="deleteFile()" class="btn btn-default">Delete</button>
+			</div>
+		</div>
+		<div class="modal" id="loadingWidget">
+			<div class ="modal-dialog modal-sm">
+				<div class="modal-content">
+					<div class="modal-body">
+			            <img alt="Loading  Content" src="/assets/img/ajax-loader.gif" /> {{dialogText}}				      
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>
