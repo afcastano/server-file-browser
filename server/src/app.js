@@ -2,8 +2,8 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var env = require(__dirname + '/../' + process.argv[2]);
-var versionProp = require(__dirname + '/../package.json');
+var env = require(__dirname + '/../../' + process.argv[2]);
+var versionProp = require(__dirname + '/../../package.json');
 var bodyParser = require('body-parser');
 
 var Files = require('./modules/Files');
@@ -15,7 +15,7 @@ app.use( bodyParser.urlencoded({
 	extended: true
 }) );
 
-app.use(express.static(__dirname + "/www"));
+app.use(express.static(__dirname + "/../../client/build"));
 
 io.on('connection', function(socket){
 	console.log('A user connected');

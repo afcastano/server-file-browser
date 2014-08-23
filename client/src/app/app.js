@@ -1,4 +1,3 @@
-"use strict";
 angular.module('server-explorer', ['angularTreeview', 'btford.socket-io'])
 .factory('serverSocket', ['socketFactory', function(socketFactory){
 	return socketFactory();
