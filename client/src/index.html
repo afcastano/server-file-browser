@@ -10,40 +10,63 @@
 <!-- This script I don't know how is generated-->
 	<script src="/socket.io/socket.io.js"></script>
 
-<!-- compiled JavaScript -->
-<% scripts.forEach( function ( file ) { %>
+
+<!-- vendor js -->
+<% vendorFiles.forEach( function ( file ) { %>
+	<script type="text/javascript" src="<%= file %>"></script>
+<% }); %>
+
+
+<!-- angular modules js -->
+<% angularModules.forEach( function ( file ) { %>
+	<script type="text/javascript" src="<%= file %>"></script>
+<% }); %>
+
+<!-- angular files js -->
+<% angularApp.forEach( function ( file ) { %>
 	<script type="text/javascript" src="<%= file %>"></script>
 <% }); %>
   
 </head>
-<body ng-app="server-explorer" ng-controller="filesController" ng-init="initialize()">
+<body ng-app="server-file-browser" ng-controller="filesController" ng-init="initialize()">
 	<div>
-		<nav class="navbar navbar-default todo-navbar" role="navigation">
+		<nav class="navbar navbar-default todo-navbar navbar-fixed-top" role="navigation">
 			<div class="container-fluid">
 				<div class="navbar-header">
 					<a class="navbar-brand" href="#">Server explorer <small>{{version}}</small></a>
+				</div>
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+					<form class="navbar-form navbar-left">
+						<div class="btn-group" style="padding-left: 15px;">
+					    	<button type="button" ng-click="copyFile()" class="btn btn-default">
+					    		<span class="glyphicon glyphicon-transfer"></span>
+					    	</button>
+						    <button type="button" ng-click="deleteFile()" class="btn btn-default">
+						  		<span class="glyphicon glyphicon-trash"></span>
+						    </button>
+						    <button type="button" ng-click="chooseDir()" class="btn btn-default">
+						    	<span class="glyphicon glyphicon-folder-open"></span>
+						    </button>
+						</div>
+				    </form>
 				</div>
 			</div>
 		</nav>
 	</div>
 
-	<div class="container-fluid ">
+	<div class="container-fluid main-content">
 		<div class="row">
 			
 			<div class="col-md-6">
 				<div class="row">
-
-					<div class="col-md-2" style="padding-left: 30px;">
-						<h3>Origin</h3>
-					</div>
-
-				</div>
-				<div class="row">
 					<div class="panel panel-default">
 						<div class="panel-heading">
 	    					<div class="row">
-	    						<div class="col-md-10">
-	    							<input type="text" class="form-control input-normal ng-pristine ng-valid" ng-model="rootOrigin"></input>
+	    						<div class="col-md-1">
+	    							<h3>Origin</h3>
+	    						</div>
+	    						<div class="col-md-9">
+									 <input type="text" class="form-control input-normal ng-pristine ng-valid" ng-model="rootOrigin"></input>
 	    						</div>
 
 
@@ -73,17 +96,13 @@
 
 			<div class="col-md-6" >
 				<div class="row">
-
-					<div class="col-md-2">
-						<h3>Target</h3>
-					</div>
-
-				</div>
-				<div class="row">
 					<div class="panel panel-default">
 						<div class="panel-heading">
 	    					<div class="row">
-	    						<div class="col-md-10">
+								<div class="col-md-1">
+									<h3>Target</h3>
+								</div>
+	    						<div class="col-md-9">
 	    							<input type="text" class="form-control input-normal ng-pristine ng-valid" ng-model="rootTarget"></input>
 	    						</div>
 
@@ -115,10 +134,12 @@
 		</div>
 		<div class="row">
 
-			<div class="btn-group" style="padding-left: 15px;">
-			  <button type="button" ng-click="copyFile()" class="btn btn-default">Copy</button>
-			  <button type="button" ng-click="deleteFile()" class="btn btn-default">Delete</button>
-			</div>
+			
+
+
+
+
+
 		</div>
 		<div class="modal" id="loadingWidget">
 			<div class ="modal-dialog modal-sm">
@@ -126,6 +147,22 @@
 					<div class="modal-body">
 			            <img alt="Loading  Content" src="/assets/img/ajax-loader.gif" /> {{dialogText}}				      
 					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal" id="newDirDialog">
+			<div class ="modal-dialog modal-sm">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title">New dir on {{targetDir}}</h4>
+					</div>
+					<div class="modal-body">
+						<input id="newDirName" type="text" class="form-control input-normal ng-pristine ng-valid" ng-model="newDirName"></input>
+			        </div>
+					<div class="modal-footer">
+				        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				        <button type="button" class="btn btn-primary" ng-click="mkDir()">Create</button>
+			      	</div>
 				</div>
 			</div>
 		</div>

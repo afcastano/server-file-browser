@@ -1,9 +1,5 @@
-angular.module('server-explorer', ['angularTreeview', 'btford.socket-io'])
-.factory('serverSocket', ['socketFactory', function(socketFactory){
-	return socketFactory();
-}])
-.controller('filesController', ['$scope', '$http', 'serverSocket',
-	function($scope, $http, serverSocket) {
+angular.module('sfb-files')
+.controller('filesController', function($scope, $http, serverSocket) {
 
 		$scope.dialogText = "Loading...";
 
@@ -138,6 +134,24 @@ angular.module('server-explorer', ['angularTreeview', 'btford.socket-io'])
 			});
 		};
 
+		$scope.chooseDir = function() {
+			$scope.newDirName="";
+			$('#newDirDialog').modal('show');
+			$('#newDirName').focus();
+			
+			
+		};
+
+		$scope.mkDir = function() {
+			$http.post('/api/mkdir?path=' + $scope.targetDir + '/' + $scope.newDirName)
+			.success(function(){
+				$scope.loadTargetFiles();
+				$('#newDirDialog').modal('hide');
+			}).error(function(err){
+				alert('Error:' + err);
+			});
+		};
+
 
 	}
-]);
+);
