@@ -136,11 +136,16 @@ module.exports =(function(){
 		});
 	};
 
+	function mkDir(filePath) {
+		return qfs.makeDirectory(filePath);
+	}
+
 
 	return {
 		listFiles: listFiles,
 		fullStat: fullStat,
 		removeFile: removeFile,
-		copyFile: copyFile
+		copyFile: copyFile,
+		mkDir: mkDir
 	}
 })();

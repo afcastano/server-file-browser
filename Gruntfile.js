@@ -266,9 +266,26 @@ module.exports = function ( grunt ) {
   /**
    * A utility function to get all app JavaScript sources.
    */
-  function filterForJS ( files ) {
+  function filterAppJs ( files ) {
     return files.filter( function ( file ) {
-      return file.match( /\.js$/ );
+      var insideApp = file.match( /app\/.+\.js$/ );
+      var module = file.match( /module\.js$/ );
+      return insideApp && !module;
+    });
+  }
+
+  function filterVendorJs(files) {
+    return files.filter( function ( file ) {
+      return file.match( /vendor\/.+\.js$/ );
+    });
+  }
+
+  /**
+   * A utility function to get all module sources.
+   */
+  function filterAngularModules ( files ) {
+    return files.filter( function ( file ) {
+      return file.match( /module\.js$/ );
     });
   }
 
@@ -289,9 +306,19 @@ module.exports = function ( grunt ) {
    */
   grunt.registerMultiTask( 'index', 'Process index.html template', function () {
     var dirRE = new RegExp( '^('+grunt.config('build_dir')+'|'+grunt.config('compile_dir')+')\/', 'g' );
-    var jsFiles = filterForJS( this.filesSrc ).map( function ( file ) {
+    
+    var vendorFiles = filterVendorJs( this.filesSrc ).map( function ( file ) {
       return file.replace( dirRE, '' );
     });
+
+    var angularModules = filterAngularModules( this.filesSrc ).map( function ( file ) {
+      return file.replace( dirRE, '' );
+    });
+
+    var angularApp = filterAppJs(this.filesSrc).map( function (file) {
+      return file.replace( dirRE, '' );
+    });
+
     var cssFiles = filterForCSS( this.filesSrc ).map( function ( file ) {
       return file.replace( dirRE, '' );
     });
@@ -300,7 +327,9 @@ module.exports = function ( grunt ) {
       process: function ( contents, path ) {
         return grunt.template.process( contents, {
           data: {
-            scripts: jsFiles,
+            vendorFiles: vendorFiles,
+            angularModules: angularModules,
+            angularApp: angularApp,
             styles: cssFiles,
             version: grunt.config( 'pkg.version' )
           }

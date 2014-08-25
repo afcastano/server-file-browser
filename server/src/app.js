@@ -114,3 +114,17 @@ app.delete('/api/file', function(req, res){
 	
 });
 
+app.post('/api/mkdir', function(req, res){
+
+	var filePath =  req.query.path;
+	Files.mkDir(filePath).then(function(){
+		console.log('dir created ok!')
+		res.send('OK');
+	
+	}).fail(function(err){
+		console.log("Error thrown creating " + err.stack);
+		res.status(500).send(err.message);	
+	
+	});
+	
+});

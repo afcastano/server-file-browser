@@ -1,0 +1,1 @@
+angular.module('server-file-browser', ['sfb-common','sfb-files']);
