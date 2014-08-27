@@ -22,7 +22,7 @@ FileBrowser
 - Show progress by reading dest size and computing.
 - Show progress on directories.
 - Increase poll time to 200 ms.
-+ Change buttons for icons
+- Change buttons for icons
 + Organize templates on client side
 + Refresh node automatically on server side
 + Server side: Extract router.
