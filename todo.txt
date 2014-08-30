@@ -17,7 +17,7 @@ FileBrowser
 + Preserve collapsed status on session
 + Preserve collapsed status when default path is the same.
 + Make modal smaller
-+ Avoid modal flickering
++ Avoid modal flickering. Avoid fade in and out.
 + Confirm before deleting
 - Show progress by reading dest size and computing.
 - Show progress on directories.
@@ -26,5 +26,7 @@ FileBrowser
 + Organize templates on client side
 + Refresh node automatically on server side
 + Server side: Extract router.
-+ Client side: Create a service to communicate with the server.
+- Client side: Create a service to communicate with the server.
 + Use grunt to run app.
++ Directive for dialog and socket communication.
++ Create a generic dialog directive, or dialog service.

@@ -201,7 +201,7 @@ module.exports = function ( grunt ) {
        */
       jssrc: {
         files: [ 
-          'client/src/app/**/*.js'
+          'client/src/app/**/*'
         ],
         tasks: [ 'copy:build_appjs' ]
       },

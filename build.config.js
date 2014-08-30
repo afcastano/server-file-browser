@@ -60,7 +60,8 @@ module.exports = {
       'vendor/angular.treeview.js',
       'vendor/jquery-1.8.2.js',
       'vendor/bootstrap.js',
-      'vendor/ui-bootstrap-tpls-0.10.0.js',
+      'vendor/ui-bootstrap-0.11.0.js',
+      'vendor/ui-bootstrap-tpls-0.11.0.js',
       'vendor/socket.js',
       'vendor/underscore.js'
     ],

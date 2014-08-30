@@ -80,6 +80,7 @@ app.post('/api/copy', function(req, res){
 
 
 	//Here I am setting the interval for the progress of the copy.
+	console.log('Copying file: ' + filePath);
 	var intervalPromise = monitorFile(filePath, targetPath);
 	
 	Files.copyFile(filePath, targetPath).then(function(){
@@ -92,6 +93,7 @@ app.post('/api/copy', function(req, res){
 	}).fin(function(){
 		intervalPromise.then(function(interval){
 			clearInterval(interval);	
+			console.log('Copy finished');
 		});
 		
 	});

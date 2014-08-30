@@ -1,18 +1,16 @@
 angular.module('sfb-files')
-.controller('filesController', function($scope, $http, serverSocket) {
-
-		$scope.dialogText = "Loading...";
+.controller('filesController', function($scope, configService, fileDataService) {
 
 		$scope.initialize = function() {
-			$http.get('/api/defaultpath').success(function(data){
-				//$scope.treedata = data;
-					$scope.rootOrigin = data.origin;
-					$scope.originDir = data.origin;
-					$scope.rootTarget = data.target;
-					$scope.targetDir = data.target;
+
+			fileDataService.getDefaultPaths().then(function(data){
+				$scope.rootOrigin = data.origin;
+				$scope.originDir = data.origin;
+				$scope.rootTarget = data.target;
+				$scope.targetDir = data.target;
 			});
 
-			$http.get('/api/version').success(function(data){
+			configService.getVersion().then(function(data){
 				$scope.version = data;
 			});
 
@@ -41,17 +39,16 @@ angular.module('sfb-files')
 		};
 
 		$scope.onNodeExpanded = function(node) {
-			$('#loadingWidget').modal('show');
-			$http.get('/api/list?dir=' + node.id).success(function(data){
+			$scope.loading = true;
+			fileDataService.listFiles(node.id).then(function(data){
 
 				$scope.collapseAll(data);
 
 				node.children = data;
-				$('#loadingWidget').modal('hide');
-			}).error(function(err){
-				$('#loadingWidget').modal('hide');
+			}).catch(function(err){
 				alert('Error: ' + err);
-				
+			}).finally(function(){
+				$scope.loading = false;
 			});
 		};
 
@@ -65,72 +62,58 @@ angular.module('sfb-files')
 
 		};
 
+		$scope.onCopyError = function(error) {
+			console.log(error);
+			alert('Error: ' + error);
+		}
+
+		$scope.onCopyEnd = function() {
+			$scope.loadTargetFiles();
+		}
+
 		$scope.loadOriginFiles = function() {
-			$('#loadingWidget').modal('show');
-			$http.get('/api/list?dir=' + $scope.rootOrigin).success(function(data){
+			$scope.loading = true;
+			fileDataService.listFiles($scope.rootOrigin).then(function(data){
 
 				$scope.collapseAll(data);
 
 				$scope.origindata = data;
-				$('#loadingWidget').modal('hide');
-			}).error(function(err){
-				$('#loadingWidget').modal('hide');
+			}).catch(function(err){
 				alert('Error: ' + err);
 				
+			}).finally(function(){
+				$scope.loading = false;			
 			});
 		};
 
 		$scope.loadTargetFiles = function() {
-			$('#loadingWidget').modal('show');
-			$http.get('/api/list?dir=' + $scope.rootTarget).success(function(data){
+			$scope.loading = true;
+			fileDataService.listFiles($scope.rootTarget).then(function(data){
 				$scope.collapseAll(data);
 				$scope.targetdata = data;
-				$('#loadingWidget').modal('hide');
-			}).error(function(err){
-				$('#loadingWidget').modal('hide');
+			}).catch(function(err){
 				alert('Error: ' + err);
+			}).finally(function(){
+				$scope.loading = false;
 			});
 		};
 
-		serverSocket.on('copyEnd', function(msg){
-			console.log('Copy OK: ' + msg);
-			$scope.loadOriginFiles();
-			$scope.loadTargetFiles();
-			$('#loadingWidget').modal('hide');
-			$scope.dialogText = "Loading...";
-		});
-
-		serverSocket.on('copyError', function(err){
-			console.log(err);
-			$('#loadingWidget').modal('hide');
-			$scope.dialogText = "Loading...";
-			alert('Error: ' + err);
-
-		});
-
-		serverSocket.on('copyProgress', function(data){
-			var percentage = Math.floor((data.copied/data.total)*100);
-			$scope.dialogText='Transfered ' + percentage + '%';
-		});
-
 		$scope.copyFile = function() {
-			$('#loadingWidget').modal('show');
-			$http.post('/api/copy', {origin: $scope.originDir, target: $scope.targetDir, file: $scope.originFile})
-			.error(function(err){
-				$('#loadingWidget').modal('hide');
+			fileDataService.copy({origin: $scope.originDir, target: $scope.targetDir, file: $scope.originFile})
+			.catch(function(err){
 				alert('Error: ' + err);
 			});
 		};
 
 		$scope.deleteFile = function() {
-			$('#loadingWidget').modal('show');
-			$http.delete('/api/file?path=' + $scope.originDir + '/' + $scope.originFile)
-			.success(function(){
-				$('#loadingWidget').modal('hide');
+			$scope.loading = true;
+			fileDataService.deleteFile($scope.originDir + '/' + $scope.originFile)
+			.then(function(){
 				$scope.loadOriginFiles();
-			}).error(function(err){
-				$('#loadingWidget').modal('hide');
+			}).catch(function(err){
 				alert('Error: ' + err);
+			}).finally(function(){
+				$scope.loading = false;
 			});
 		};
 
@@ -143,11 +126,11 @@ angular.module('sfb-files')
 		};
 
 		$scope.mkDir = function() {
-			$http.post('/api/mkdir?path=' + $scope.targetDir + '/' + $scope.newDirName)
-			.success(function(){
+			fileDataService.mkDir($scope.targetDir + '/' + $scope.newDirName)
+			.then(function(){
 				$scope.loadTargetFiles();
 				$('#newDirDialog').modal('hide');
-			}).error(function(err){
+			}).catch(function(err){
 				alert('Error:' + err);
 			});
 		};

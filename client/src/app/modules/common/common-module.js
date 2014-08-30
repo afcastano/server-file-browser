@@ -1,4 +1,1 @@
-angular.module('sfb-common', ['btford.socket-io'])
-.factory('serverSocket', ['socketFactory', function(socketFactory){
-	return socketFactory();
-}]);
+angular.module('sfb-common', ['btford.socket-io','ui.bootstrap']);

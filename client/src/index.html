@@ -141,7 +141,13 @@
 
 
 		</div>
-		<div class="modal" id="loadingWidget">
+
+		<loading-dialog show="loading">
+		</loading-dialog>
+		<copy-dialog error="onCopyError(error)" end="onCopyEnd()">
+		</copy-dialog>
+
+<!-- 		<div class="modal" id="loadingWidget">
 			<div class ="modal-dialog modal-sm">
 				<div class="modal-content">
 					<div class="modal-body">
@@ -149,7 +155,7 @@
 					</div>
 				</div>
 			</div>
-		</div>
+		</div> -->
 		<div class="modal" id="newDirDialog">
 			<div class ="modal-dialog modal-sm">
 				<div class="modal-content">
