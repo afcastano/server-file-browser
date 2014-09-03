@@ -1,7 +1,7 @@
 {
   "name": "server-file-browser",
   "description": "File browser for the server",
-  "version": "v0.0.4",
+  "version": "v0.0.5",
   "homepage": "https://github.com/afcastano/server-file-browser",
   "licenses": {
     "type": "MIT",
