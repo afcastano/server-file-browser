@@ -2,7 +2,6 @@ angular.module('sfb-files')
 .controller('filesController', function($scope, configService, fileDataService) {
 
 		$scope.initialize = function() {
-
 			fileDataService.getDefaultPaths().then(function(data){
 				$scope.rootOrigin = data.origin;
 				$scope.originDir = data.origin;
@@ -18,8 +17,6 @@ angular.module('sfb-files')
 			    if( $scope.originTree && angular.isObject($scope.originTree.currentNode) ) {
 			        $scope.originFile = $scope.originTree.currentNode.label;
 			        $scope.originDir = $scope.originTree.currentNode.dir;
-			        console.log($scope.originFile);
-			        console.log($scope.originDir);
 			    }
 			}, false);
 			
@@ -32,7 +29,6 @@ angular.module('sfb-files')
 			    		$scope.targetDir = node.dir;
 			    	}
 			        
-			        console.log($scope.targetDir);
 			    }
 			}, false);
 

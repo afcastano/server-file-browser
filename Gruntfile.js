@@ -9,6 +9,8 @@ module.exports = function ( grunt ) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-karma');
+
 
   /**
    * Load in our build configuration file.
@@ -105,6 +107,16 @@ module.exports = function ( grunt ) {
             expand: true
           }
         ]
+      },
+      build_tests: {
+        files: [
+          {
+            src: [ '**/*.js'],
+            dest: '<%= build_dir %>/tests',
+            cwd: 'client/tests',
+            expand: true
+          }
+        ]
       }
     },
 
@@ -139,6 +151,22 @@ module.exports = function ( grunt ) {
     },
 
     /**
+     * The Karma configurations.
+     */
+    karma: {
+      options: {
+        configFile: '<%= build_dir %>/karma.conf.js'
+      },
+      unit: {
+        port: 9019,
+        background: true
+      },
+      continuous: {
+        singleRun: true
+      }
+    },
+
+    /**
      * The `index` task compiles the `index.html` file as a Grunt template. CSS
      * and JS files co-exist here but they get split apart later.
      */
@@ -160,6 +188,22 @@ module.exports = function ( grunt ) {
         cwd: '<%= build_dir %>'
       }
 
+    },
+
+    /**
+     * This task compiles the karma template so that changes to its file array
+     * don't have to be managed manually.
+     */
+    karmaconfig: {
+      unit: {
+        dir: '<%= build_dir %>',
+        src: [ 
+          '<%= vendor_files.js %>',
+          'app/**/*.js',
+          'tests/**/*.js'
+        ],
+        cwd: '<%= build_dir %>'
+      }
     },
 
     /**
@@ -252,7 +296,7 @@ module.exports = function ( grunt ) {
    */
   grunt.registerTask( 'build', [
     'clean', 'copy:build_app_assets', 'copy:build_vendor_assets',
-    'copy:build_appjs', 'copy:build_vendorjs', 'index:build' 
+    'copy:build_appjs', 'copy:build_vendorjs', 'copy:build_tests', 'index:build', 'karmaconfig','karma:continuous' 
   ]);
 
   /**
@@ -277,6 +321,12 @@ module.exports = function ( grunt ) {
   function filterVendorJs(files) {
     return files.filter( function ( file ) {
       return file.match( /vendor\/.+\.js$/ );
+    });
+  }
+
+  function filterTestsJs(files) {
+    return files.filter( function ( file ) {
+      return file.match( /tests\/.+\.js$/ );
     });
   }
 
@@ -332,6 +382,45 @@ module.exports = function ( grunt ) {
             angularApp: angularApp,
             styles: cssFiles,
             version: grunt.config( 'pkg.version' )
+          }
+        });
+      }
+    });
+  });
+
+
+  /**
+   * In order to avoid having to specify manually the files needed for karma to
+   * run, we use grunt to manage the list for us. The `karma/*` files are
+   * compiled as grunt templates for use by Karma. Yay!
+   */
+  grunt.registerMultiTask( 'karmaconfig', 'Process karma config templates', function () {
+    var dirRE = new RegExp( '^('+grunt.config('build_dir')+'|'+grunt.config('compile_dir')+')\/', 'g' );
+    
+    var vendorFiles = filterVendorJs( this.filesSrc ).map( function ( file ) {
+      return file.replace( dirRE, '' );
+    });
+
+    var angularModules = filterAngularModules( this.filesSrc ).map( function ( file ) {
+      return file.replace( dirRE, '' );
+    });
+
+    var angularApp = filterAppJs(this.filesSrc).map( function (file) {
+      return file.replace( dirRE, '' );
+    });
+
+    var tests = filterTestsJs(this.filesSrc).map( function (file) {
+      return file.replace( dirRE, '' );
+    });
+
+    grunt.file.copy( 'karma.conf.tpl.js', grunt.config( 'build_dir' ) + '/karma.conf.js', { 
+      process: function ( contents, path ) {
+        return grunt.template.process( contents, {
+          data: {
+            vendorFiles: vendorFiles,
+            angularModules: angularModules,
+            angularApp: angularApp,
+            tests: tests
           }
         });
       }
