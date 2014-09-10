@@ -7,7 +7,7 @@ FileBrowser
 - Find a way to better read the path.
 - Load the collapsed tree
 - When a dir is empty, show the folder instead of the file.
--:wq Control when lots of files are loaded. Maybe load only files and dirs and then load contents on demand.
+- Control when lots of files are loaded. Maybe load only files and dirs and then load contents on demand.
 - Make it async
 - Dont show hidden files
 - Dont fail if it cant delete
@@ -33,3 +33,4 @@ FileBrowser
 + Extract build dir out of client. rename it to client_build
 + Test common and files services and directives.
 + Reorganize build folder so it can include the test subfolder and the src subfolder.
++ Refresh only the current folder after copying.
