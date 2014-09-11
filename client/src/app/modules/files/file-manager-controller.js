@@ -87,6 +87,7 @@ angular.module('sfb-files')
 			fileDataService.listFiles($scope.rootTarget).then(function(data){
 				$scope.collapseAll(data);
 				$scope.targetdata = data;
+				$scope.targetDir = $scope.rootTarget;
 			}).catch(function(err){
 				alert('Error: ' + err);
 			}).finally(function(){
