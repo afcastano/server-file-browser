@@ -29,7 +29,7 @@ describe('Server File Browser', function() {
 
 
   function createOriginFile(fileName) {
-  		fs.openSync(originPath + '/' + fileName, 'w');	
+  		fs.writeFile(originPath + '/' + fileName, 'bla bla bla');
   }
 
   function createTargetDir(dirName) {
@@ -39,7 +39,7 @@ describe('Server File Browser', function() {
   function deleteOriginFile(fileName) {
   	var path = originPath + '/' + fileName;
   	if (fs.existsSync(path)) {
-  		fs.unlinkSync(path, 'w');	
+  		fs.unlinkSync(path);	
     }
   }
 
@@ -47,7 +47,7 @@ describe('Server File Browser', function() {
 
   	var path = targetPath + '/' + fileName;
   	if (fs.existsSync(path)) {
-  		fs.unlinkSync(path, 'w');	
+  		fs.unlinkSync(path);	
     }
   }
 
