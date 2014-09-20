@@ -91,10 +91,7 @@ describe('Server File Browser', function() {
     expect(page.targetFiles.count()).toEqual(1);
     
     page.copyBtn.click();
-    expect(page.targetFiles.count()).toEqual(1);
-    page.targetFolders.first().element(by.css('.collapsed')).click();
-    expect(page.targetChildren.count()).toEqual(1);
-
+    expect(page.targetFiles.count()).toEqual(2);
 
   });
 

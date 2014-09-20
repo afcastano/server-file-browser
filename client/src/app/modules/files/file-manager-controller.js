@@ -28,6 +28,8 @@ angular.module('sfb-files')
 			    	} else {
 			    		$scope.targetDir = node.dir;
 			    	}
+
+			    	$scope.targetNode = node;
 			        
 			    }
 			}, false);
@@ -41,13 +43,14 @@ angular.module('sfb-files')
 		$scope.onNodeExpanded = function(node) {
 			$scope.loading = true;
 			fileDataService.listFiles(node.id).then(function(data){
-
 				$scope.collapseAll(data);
+				$scope.setParent(node, data);
 
 				node.children = data;
 			}).catch(function(err){
 				alert('Error: ' + err);
 			}).finally(function(){
+				node.collapsed = false;
 				$scope.loading = false;
 			});
 		};
@@ -62,13 +65,31 @@ angular.module('sfb-files')
 
 		};
 
+		$scope.setParent = function(parent,data) {
+			_.each(data, function(node){
+				node.parent = parent;
+			});
+		};
+
 		$scope.onCopyError = function(error) {
 			console.log(error);
 			alert('Error: ' + error);
 		}
 
 		$scope.onCopyEnd = function() {
-			$scope.loadTargetFiles();
+			if($scope.targetNode) {
+				if($scope.targetNode.isDir) {
+					$scope.onNodeExpanded($scope.targetNode); 
+				} else {
+					if($scope.targetNode.parent) {
+						$scope.onNodeExpanded($scope.targetNode.parent); 
+					} else {
+						$scope.loadTargetFiles();		
+					}
+				}
+			} else {
+				$scope.loadTargetFiles();
+			}
 		}
 
 		$scope.loadOriginFiles = function() {

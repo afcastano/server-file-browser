@@ -88,4 +88,61 @@ describe('Unit: filesController', function() {
 		scope.chooseDir();
 		expect(scope.createNewDir).toEqual(true);	
 	});
+
+	it('Should load the selected node on copy end', function(){
+		scope.targetNode = {
+			isDir: true
+		};
+		
+		spyOn(scope,'onNodeExpanded');
+
+		scope.onCopyEnd();
+
+		expect(scope.onNodeExpanded).toHaveBeenCalledWith(scope.targetNode);
+
+	});
+
+	it('Should load the parent node on copy end', function(){
+		var parent = {};
+
+		scope.targetNode = {
+			isDir: false,
+			parent: parent
+		};
+		
+		spyOn(scope,'onNodeExpanded');
+
+		scope.onCopyEnd();
+
+		expect(scope.onNodeExpanded).toHaveBeenCalledWith(scope.targetNode.parent);
+
+	});
+
+	it('Should load the base node when the parent is null', function(){
+		var parent = null;
+
+		scope.targetNode = {
+			isDir: false,
+			parent: parent
+		};
+		
+		spyOn(scope,'loadTargetFiles');
+
+		scope.onCopyEnd();
+
+		expect(scope.loadTargetFiles).toHaveBeenCalled();
+
+	});
+
+	it('Should load the base node when there is no selected node', function(){
+
+		scope.targetNode = null;
+		
+		spyOn(scope,'loadTargetFiles');
+
+		scope.onCopyEnd();
+
+		expect(scope.loadTargetFiles).toHaveBeenCalled();
+
+	});
 });
