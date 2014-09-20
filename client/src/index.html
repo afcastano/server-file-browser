@@ -38,13 +38,13 @@
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 					<form class="navbar-form navbar-left">
 						<div class="btn-group" style="padding-left: 15px;">
-					    	<button type="button" ng-click="copyFile()" class="btn btn-default">
+					    	<button id='copy-btn' type="button" ng-click="copyFile()" class="btn btn-default">
 					    		<span class="glyphicon glyphicon-transfer"></span>
 					    	</button>
-						    <button type="button" ng-click="deleteFile()" class="btn btn-default">
+						    <button id='delete-btn' type="button" ng-click="deleteFile()" class="btn btn-default">
 						  		<span class="glyphicon glyphicon-trash"></span>
 						    </button>
-						    <button type="button" ng-click="chooseDir()" class="btn btn-default">
+						    <button id='newDir-btn' type="button" ng-click="chooseDir()" class="btn btn-default">
 						    	<span class="glyphicon glyphicon-folder-open"></span>
 						    </button>
 						</div>
@@ -71,12 +71,12 @@
 
 
 	    						<div class="col-md-2" style="padding-left: 0px;">
-	    							<button type="button" class="btn btn-primary" ng-click="loadOriginFiles()">Load</button>
+	    							<button id="load-origin" type="button" class="btn btn-primary" ng-click="loadOriginFiles()">Load</button>
 	    						</div>
 	    					</div>
 	  					</div>
 	  					<div class="panel-body">
-							<div class="col-md-10" id="main_content"
+							<div class="col-md-10" id="main_content1"
 							>
 								<div
 								    data-angular-treeview="true"
@@ -108,12 +108,12 @@
 
 
 	    						<div class="col-md-2" style="padding-left: 0px;">
-	    							<button type="button" class="btn btn-primary" ng-click="loadTargetFiles()">Load</button>
+	    							<button id='load-target' type="button" class="btn btn-primary" ng-click="loadTargetFiles()">Load</button>
 	    						</div>
 	    					</div>
 	  					</div>
 	  					<div class="panel-body">
-							<div class="col-md-10" id="main_content"
+							<div class="col-md-10" id="main_content2"
 							>
 								<div
 								    data-angular-treeview="true"
@@ -147,31 +147,8 @@
 		<copy-dialog error="onCopyError(error)" end="onCopyEnd()">
 		</copy-dialog>
 
-<!-- 		<div class="modal" id="loadingWidget">
-			<div class ="modal-dialog modal-sm">
-				<div class="modal-content">
-					<div class="modal-body">
-			            <img alt="Loading  Content" src="/assets/img/ajax-loader.gif" /> {{dialogText}}				      
-					</div>
-				</div>
-			</div>
-		</div> -->
-		<div class="modal" id="newDirDialog">
-			<div class ="modal-dialog modal-sm">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h4 class="modal-title">New dir on {{targetDir}}</h4>
-					</div>
-					<div class="modal-body">
-						<input id="newDirName" type="text" class="form-control input-normal ng-pristine ng-valid" ng-model="newDirName"></input>
-			        </div>
-					<div class="modal-footer">
-				        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-				        <button type="button" class="btn btn-primary" ng-click="mkDir()">Create</button>
-			      	</div>
-				</div>
-			</div>
-		</div>
+		<new-dir-dialog show="createNewDir" target-dir="targetDir" accept="onDirCreated(dir)" error="onDirCreationError(err)">
+		</new-dir-dialog>
 	</div>
 
 </body>

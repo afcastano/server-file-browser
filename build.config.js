@@ -63,7 +63,8 @@ module.exports = {
       'vendor/ui-bootstrap-0.11.0.js',
       'vendor/ui-bootstrap-tpls-0.11.0.js',
       'vendor/socket.js',
-      'vendor/underscore.js'
+      'vendor/underscore.js',
+      'vendor/angular-mocks.js'
     ],
     css: [
     ],

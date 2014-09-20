@@ -30,3 +30,8 @@ FileBrowser
 + Use grunt to run app.
 - Directive for dialog and socket communication.
 - Create a generic dialog directive, or dialog service.
++ Extract build dir out of client. rename it to client_build
++ Test common and files services and directives.
++ Reorganize build folder so it can include the test subfolder and the src subfolder.
+- Refresh only the current folder after copying.
++ Focus input on modal dialogs.
