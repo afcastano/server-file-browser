@@ -34,6 +34,10 @@ angular.module('sfb-files')
 
 		};
 
+		$scope.onDirCreated = function(dir) {
+			$scope.loadTargetFiles();
+		};
+
 		$scope.onNodeExpanded = function(node) {
 			$scope.loading = true;
 			fileDataService.listFiles(node.id).then(function(data){
@@ -95,6 +99,10 @@ angular.module('sfb-files')
 			});
 		};
 
+		$scope.onDirCreationError = function(err) {
+			alert(err);
+		};
+
 		$scope.copyFile = function() {
 			fileDataService.copy({origin: $scope.originDir, target: $scope.targetDir, file: $scope.originFile})
 			.catch(function(err){
@@ -115,23 +123,8 @@ angular.module('sfb-files')
 		};
 
 		$scope.chooseDir = function() {
-			$scope.newDirName="";
-			$('#newDirDialog').modal('show');
-			$('#newDirName').focus();
-			
-			
+			$scope.createNewDir=true;			
 		};
-
-		$scope.mkDir = function() {
-			fileDataService.mkDir($scope.targetDir + '/' + $scope.newDirName)
-			.then(function(){
-				$scope.loadTargetFiles();
-				$('#newDirDialog').modal('hide');
-			}).catch(function(err){
-				alert('Error:' + err);
-			});
-		};
-
 
 	}
 );

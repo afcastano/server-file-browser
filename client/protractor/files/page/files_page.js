@@ -3,6 +3,8 @@ module.exports =(function(){
 	var originPath;
 	var targetPath;
 
+	var ptor = protractor.getInstance();
+
 	var page = {
 
       originInput : element(by.model('rootOrigin')),
@@ -17,7 +19,7 @@ module.exports =(function(){
 	  deleteBtn : element(by.id('delete-btn')),
 	  newDirBtn: element(by.id('newDir-btn')),
 	  createDirBtn: element(by.id('createDir-btn')),
-	  newDirInput: element(by.model('newDirName')),
+	  newDirInput: element(by.model('modalData.newDirName')),
 	  
 	  setPaths : function(origin, target) {
 	  	originPath = origin;
@@ -37,10 +39,12 @@ module.exports =(function(){
   	  },
   	  selectFirstTargetDir : function() {
 	    page.loadTargetFiles(targetPath);
+	    ptor.sleep(500);
 	    page.targetFiles.first().click();
 	  },
 	  selectFirstOriginFile : function() {
 	    page.loadOriginFiles(originPath);
+	    ptor.sleep(500);
 	    page.originFiles.first().click();
 	  }
 

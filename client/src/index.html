@@ -147,22 +147,8 @@
 		<copy-dialog error="onCopyError(error)" end="onCopyEnd()">
 		</copy-dialog>
 
-		<div class="modal" id="newDirDialog">
-			<div class ="modal-dialog modal-sm">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h4 class="modal-title">New dir on {{targetDir}}</h4>
-					</div>
-					<div class="modal-body">
-						<input id="newDirName" type="text" class="form-control input-normal ng-pristine ng-valid" ng-model="newDirName"></input>
-			        </div>
-					<div class="modal-footer">
-				        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-				        <button id='createDir-btn' type="button" class="btn btn-primary" ng-click="mkDir()">Create</button>
-			      	</div>
-				</div>
-			</div>
-		</div>
+		<new-dir-dialog show="createNewDir" target-dir="targetDir" accept="onDirCreated(dir)" error="onDirCreationError(err)">
+		</new-dir-dialog>
 	</div>
 
 </body>

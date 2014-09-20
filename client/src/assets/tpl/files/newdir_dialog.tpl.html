@@ -1,0 +1,10 @@
+<div class="modal-header">
+	<h4 class="modal-title">New dir on {{modalData.targetDir}}</h4>
+</div>
+<div class="modal-body">
+	<input id="newDirName" autofocus type="text" class="form-control input-normal ng-pristine ng-valid" ng-model="modalData.newDirName"></input>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" ng-click="cancel()">Close</button>
+    <button id='createDir-btn' type="button" class="btn btn-primary" ng-click="ok()">Create</button>
+</div>

@@ -11,6 +11,9 @@ angular.module('file-mock', ['test-util'])
 			},
 			copy : function(data) {
 				return qUtil.resolvedPromise();
+			},
+			mkDir : function(dirPath) {
+				return qUtil.resolvedPromise();
 			}	
 
 		}

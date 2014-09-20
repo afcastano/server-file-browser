@@ -83,4 +83,9 @@ describe('Unit: filesController', function() {
 		expect(fileDataService.copy).toHaveBeenCalledWith({origin: 'oDir', target:'tDir', file:'oFile'});
 	}); 
 
+	it('Should open dialog when mehtod called', function(){
+		scope.createNewDir=false;
+		scope.chooseDir();
+		expect(scope.createNewDir).toEqual(true);	
+	});
 });
