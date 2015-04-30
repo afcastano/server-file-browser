@@ -13,3 +13,5 @@ Create dir
 
 Pending:
 Install instructions.
+Run npm install -g grunt-cli
+run grunt build --force
