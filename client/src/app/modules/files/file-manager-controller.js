@@ -13,6 +13,8 @@ angular.module('sfb-files')
 				$scope.version = data;
 			});
 
+			$scope.fileSelected = false;
+
 			$scope.$watch( 'originTree.currentNode', function( newObj, oldObj ) {
 			    if( $scope.originTree && angular.isObject($scope.originTree.currentNode) ) {
 			        $scope.originFile = $scope.originTree.currentNode.label;
@@ -21,12 +23,14 @@ angular.module('sfb-files')
 			}, false);
 			
 			$scope.$watch( 'targetTree.currentNode', function( newObj, oldObj ) {
+				$scope.fileSelected = false;
 			    if( $scope.targetTree && angular.isObject($scope.targetTree.currentNode) ) {
 			    	var node = 	$scope.targetTree.currentNode;
 			    	if(node.isDir) {
 			    		$scope.targetDir = node.dir + '/' + node.label;	
 			    	} else {
 			    		$scope.targetDir = node.dir;
+    					$scope.fileSelected = true;
 			    	}
 
 			    	$scope.targetNode = node;

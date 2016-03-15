@@ -64,7 +64,8 @@ module.exports = {
       'vendor/ui-bootstrap-tpls-0.11.0.js',
       'vendor/socket.js',
       'vendor/underscore.js',
-      'vendor/angular-mocks.js'
+      'vendor/angular-mocks.js',
+      'vendor/angular-file.js'
     ],
     css: [
     ],

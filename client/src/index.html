@@ -38,15 +38,19 @@
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 					<form class="navbar-form navbar-left">
 						<div class="btn-group" style="padding-left: 15px;">
-					    	<button id='copy-btn' type="button" ng-click="copyFile()" class="btn btn-default">
+					    	<button id='copy-btn' type="button" ng-click="copyFile()" class="btn btn-default" title="Copy file">
 					    		<span class="glyphicon glyphicon-transfer"></span>
 					    	</button>
-						    <button id='delete-btn' type="button" ng-click="deleteFile()" class="btn btn-default">
+						    <button id='delete-btn' type="button" ng-click="deleteFile()" class="btn btn-default" title="Delete file">
 						  		<span class="glyphicon glyphicon-trash"></span>
 						    </button>
-						    <button id='newDir-btn' type="button" ng-click="chooseDir()" class="btn btn-default">
+						    <button id='newDir-btn' type="button" ng-click="chooseDir()" class="btn btn-default" title="New dir">
 						    	<span class="glyphicon glyphicon-folder-open"></span>
 						    </button>
+						    <label class="btn btn-default" for="loadSubtl-btn" ng-disabled="!fileSelected" title="Upload subtitle">
+							    <input id="loadSubtl-btn" type="file" style="display:none;" ng-model="model.file" change="upload(model)">
+							    <span class="glyphicon glyphicon-upload"></span>
+							</label>
 						</div>
 				    </form>
 				</div>
