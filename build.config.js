@@ -65,7 +65,10 @@ module.exports = {
       'vendor/socket.js',
       'vendor/underscore.js',
       'vendor/angular-mocks.js',
-      'vendor/angular-file.js'
+      'vendor/lvl-file-upload.js',
+      'vendor/lvl-uuid.js',
+      'vendor/lvl-xhr-post.js'
+      // 'vendor/angular-file.js'
     ],
     css: [
     ],

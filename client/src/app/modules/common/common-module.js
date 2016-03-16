@@ -1,1 +1,1 @@
-angular.module('sfb-common', ['btford.socket-io','ui.bootstrap']);
+angular.module('sfb-common', ['btford.socket-io','ui.bootstrap', 'lvl.directives.fileupload']);

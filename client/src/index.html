@@ -47,10 +47,16 @@
 						    <button id='newDir-btn' type="button" ng-click="chooseDir()" class="btn btn-default" title="New dir">
 						    	<span class="glyphicon glyphicon-folder-open"></span>
 						    </button>
-						    <label class="btn btn-default" for="loadSubtl-btn" ng-disabled="!fileSelected" title="Upload subtitle">
-							    <input id="loadSubtl-btn" type="file" style="display:none;" ng-model="model.file" change="upload(model)">
-							    <span class="glyphicon glyphicon-upload"></span>
-							</label>
+					    	<lvl-file-upload
+							   auto-upload='true'
+							   choose-file-button-text='Choose subtitle'
+							   upload-url='http://localhost:3000/files'
+							   max-files='1'
+							   max-file-size-mb='5'
+							   get-additional-data='getData(files)'
+							   on-done='done(files, data)'
+							   on-error='error(files, type, msg)'>
+							</lvl-file-upload>
 						</div>
 				    </form>
 				</div>
@@ -154,6 +160,12 @@
 		<new-dir-dialog show="createNewDir" target-dir="targetDir" accept="onDirCreated(dir)" error="onDirCreationError(err)">
 		</new-dir-dialog>
 	</div>
-
+<script>
+// A $( document ).ready() block.
+$( document ).ready(function() {
+    $('.lvl-choose-button').addClass("btn btn-default");
+    $('.lvl-choose-button').prev().css('display','none');
+});
+</script>
 </body>
 </html>
