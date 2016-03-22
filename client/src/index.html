@@ -47,16 +47,23 @@
 						    <button id='newDir-btn' type="button" ng-click="chooseDir()" class="btn btn-default" title="New dir">
 						    	<span class="glyphicon glyphicon-folder-open"></span>
 						    </button>
-					    	<lvl-file-upload
-							   auto-upload='true'
-							   choose-file-button-text='Choose subtitle'
-							   upload-url='http://localhost:3000/files'
-							   max-files='1'
-							   max-file-size-mb='5'
-							   get-additional-data='getData(files)'
-							   on-done='done(files, data)'
-							   on-error='error(files, type, msg)'>
-							</lvl-file-upload>
+						    <span ng-show="fileSelected">
+						    	<lvl-file-upload
+								   auto-upload='true'
+								   choose-file-button-text='Choose subtitle'
+								   upload-url='http://localhost:3000/files'
+								   max-files='1'
+								   max-file-size-mb='5'
+								   get-additional-data='getData(files)'
+								   on-done='done(files, data)'
+								   on-error='error(files, type, msg)'>
+								</lvl-file-upload>
+							</span>
+							<span ng-show="!fileSelected">
+								<button id='label-btn' type="button" ng-disabled="true" class="btn btn-default">
+						  			Select a file to upload subtitles
+						    	</button>
+							</span>
 						</div>
 				    </form>
 				</div>
