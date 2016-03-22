@@ -16,4 +16,4 @@ Run `npm install -g grunt-cli`
 
 run `grunt build --force`
 
-Using https://github.com/radify/angular-file for uploading subtitles.
+Using https://github.com/logicbomb/lvlFileUpload for uploading subtitles.
