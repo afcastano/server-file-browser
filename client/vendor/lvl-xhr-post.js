@@ -1,7 +1,7 @@
 var module;
 
 try {
-    module = angular.module('lvl.services');  
+    module = angular.module('lvl.services');
 } catch (e) {
     module  = angular.module('lvl.services', []);
 }
@@ -35,21 +35,31 @@ module.factory('fileUploader', ['$rootScope', '$q', function($rootScope, $q) {
 					};
 
 					xhr.onload = function(e) {
-						$rootScope.$apply (function() {
-							var ret = {
-								files: files,
-								data: angular.fromJson(xhr.responseText)
-							};
-							deferred.resolve(ret);
-						})
+
+                        if(xhr.status < 400) {
+                            $rootScope.$apply (function() {
+                                var ret = {
+                                    files: files,
+                                    data: angular.fromJson(xhr.responseText)
+                                };
+                                deferred.resolve(ret);
+                            });
+
+                        } else {
+                            var msg = xhr.responseText ? xhr.responseText : "An unknown error occurred posting to '" + uploadUrl + "'";
+                            $rootScope.$apply (function() {
+                                deferred.reject(msg);
+                            });
+                        }
+
 					};
 
-					xhr.upload.onerror = function(e) {
+                    xhr.upload.onerror = function(e) {
 						var msg = xhr.responseText ? xhr.responseText : "An unknown error occurred posting to '" + uploadUrl + "'";
 						$rootScope.$apply (function() {
 							deferred.reject(msg);
 						});
-					}
+					};
 
 					var formData = new FormData();
 
@@ -66,7 +76,7 @@ module.factory('fileUploader', ['$rootScope', '$q', function($rootScope, $q) {
 					xhr.open("POST", uploadUrl);
 					xhr.send(formData);
 
-					return deferred.promise;				
+					return deferred.promise;
 				}
 			};
 		}

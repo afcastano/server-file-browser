@@ -1,12 +1,13 @@
 var qfs = require('q-io/fs');
 var _ = require('underscore');
 var Q = require('q');
+var path = require('path');
 
 module.exports =(function(){
 
 	function isHidden(path) {
 		var isHidden = /^\./.test(path);
-		return !isHidden;	
+		return !isHidden;
 	}
 
 	function loadFileDto(fileName, dir){
@@ -17,7 +18,7 @@ module.exports =(function(){
 
 	function fileDto(fileName, dir, stats) {
 		return {
-				label: fileName,			
+				label: fileName,
 				id: dir + '/' + fileName,
 				isDir: stats.isDirectory(),
 				size: stats.size,
@@ -49,7 +50,7 @@ module.exports =(function(){
 
 			return Q.all(promises).then(function(subDirStats){
 				_.each(subDirStats, function(subDirStat){
-					totalStat.size = totalStat.size + subDirStat.size;	
+					totalStat.size = totalStat.size + subDirStat.size;
 				});
 
 				return totalStat;
@@ -72,7 +73,7 @@ module.exports =(function(){
 		});
 
 		return qfs.stat(path).then(function(stats){
-			if(stats.isDirectory()){	
+			if(stats.isDirectory()){
 				return dirStat(path);
 			}else{
 				return fileDto(undefined, path, stats);
@@ -82,7 +83,7 @@ module.exports =(function(){
 
 	function isHidden(path) {
 		var isHidden = /^\./.test(path);
-		return !isHidden;	
+		return !isHidden;
 	};
 
 	function loadFileDto(fileName, dir){
@@ -93,7 +94,7 @@ module.exports =(function(){
 
 	function fileDto(fileName, dir, stats) {
 		return {
-				label: fileName,			
+				label: fileName,
 				id: dir + '/' + fileName,
 				isDir: stats.isDirectory(),
 				size: stats.size,
@@ -105,7 +106,7 @@ module.exports =(function(){
 	function listFiles(path, includeHidden) {
 		return qfs.list(path)
 		.then(function(files){
-			
+
 			var promises = _.chain(files)
 			.filter(function(fileName){
 
@@ -120,7 +121,7 @@ module.exports =(function(){
 			}).value();
 
 			return Q.all(promises);
-				
+
 		});
 	};
 
@@ -138,14 +139,40 @@ module.exports =(function(){
 
 	function mkDir(filePath) {
 		return qfs.makeDirectory(filePath);
-	}
+	};
 
+    function saveSubtitle(subtitleProperties, files){
+        if(!files) {
+            return Q.reject({message: 'No files were selected!'});
+        }
+
+        if(Object.keys(files).length > 1) {
+            return Q.reject({message: 'More than one file was selected!'});
+        }
+
+        var subtitleName = Object.keys(files)[0];
+        var subtitleData = files[subtitleName];
+
+        var existingFileExt = path.extname(subtitleProperties.existingFileName);
+        var subtitleExt = path.extname(subtitleName);
+
+        if(existingFileExt == subtitleExt) {
+            return Q.reject({message: 'The subtitle can not have same extension as the target file.'});
+        }
+
+
+        var newSubtitleName = path.basename(subtitleProperties.existingFileName, existingFileExt) + subtitleExt;
+        var newSubtlFullPath = subtitleProperties.targetDir + '/' + newSubtitleName;
+
+        return qfs.write(newSubtlFullPath, subtitleData.data);
+    };
 
 	return {
 		listFiles: listFiles,
 		fullStat: fullStat,
 		removeFile: removeFile,
 		copyFile: copyFile,
-		mkDir: mkDir
+		mkDir: mkDir,
+        saveSubtitle: saveSubtitle
 	}
 })();

@@ -26,7 +26,7 @@
 <% angularApp.forEach( function ( file ) { %>
 	<script type="text/javascript" src="<%= file %>"></script>
 <% }); %>
-  
+
 </head>
 <body ng-app="server-file-browser" ng-controller="filesController" ng-init="initialize()">
 	<div>
@@ -41,25 +41,25 @@
 					    	<button id='copy-btn' type="button" ng-click="copyFile()" class="btn btn-default" title="Copy file">
 					    		<span class="glyphicon glyphicon-transfer"></span>
 					    	</button>
-						    <button id='delete-btn' type="button" ng-click="deleteFile()" class="btn btn-default" title="Delete file">
+						    <button id='delete-btn' type="button" ng-click="deleteFile()" class="btn btn-default" title="Delete file" ng-disabled="!sourceSelected">
 						  		<span class="glyphicon glyphicon-trash"></span>
 						    </button>
 						    <button id='newDir-btn' type="button" ng-click="chooseDir()" class="btn btn-default" title="New dir">
 						    	<span class="glyphicon glyphicon-folder-open"></span>
 						    </button>
-						    <span ng-show="fileSelected">
+						    <span ng-show="targetFileSelected">
 						    	<lvl-file-upload
 								   auto-upload='true'
 								   choose-file-button-text='Choose subtitle'
-								   upload-url='http://localhost:3000/files'
+								   upload-url='/api/subtitle'
 								   max-files='1'
-								   max-file-size-mb='5'
-								   get-additional-data='getData(files)'
-								   on-done='done(files, data)'
-								   on-error='error(files, type, msg)'>
+								   max-file-size-mb='10'
+								   get-additional-data='getSubtitleData()'
+								   on-done='onSubtitleUploaded(files, data)'
+								   on-error='onSubtitleError(files, type, msg)'>
 								</lvl-file-upload>
 							</span>
-							<span ng-show="!fileSelected">
+							<span ng-show="!targetFileSelected">
 								<button id='label-btn' type="button" ng-disabled="true" class="btn btn-default">
 						  			Select a file to upload subtitles
 						    	</button>
@@ -73,7 +73,7 @@
 
 	<div class="container-fluid main-content">
 		<div class="row">
-			
+
 			<div class="col-md-6">
 				<div class="row">
 					<div class="panel panel-default">
@@ -107,7 +107,7 @@
 							</div>
 						</div>
 					</div>
-				</div>	
+				</div>
 			</div>
 
 
@@ -144,14 +144,14 @@
 							</div>
 						</div>
 					</div>
-				</div>	
+				</div>
 			</div>
 
 
 		</div>
 		<div class="row">
 
-			
+
 
 
 
