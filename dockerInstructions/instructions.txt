@@ -1,4 +1,66 @@
 To update the docker image from mac:
 
-run boot2docker up
+run 
+boot2docker up
+
 run the exports that it suggests
+
+run 
+docker run -i -t afcastano/sfb:latest /bin/bash
+
+navigate to:
+/root/server-file-browser/
+
+run
+git pull
+Passw: apodo
+
+run
+npm install
+
+run
+grunt update
+
+Take note of the container name at the beginning of the prompt: root@964424ce6ec0 --- The container name is 964424ce6ec0
+
+run
+exit
+
+run 
+docker commit -m "Updated app" -a "Andres Castano" 655e1f103ef9 afastano/sfb:v2
+
+Check the images is created by running
+docker images
+
+delete afcastano/sfb:latest
+docker rmi afcastano/sfb:latest
+
+tag the recently created to be the latest
+docker tag 2e4f9d3a2f74 afcastano/sfb:latest
+
+To push the image to docker hub run:
+docker push afcastano/sfb:latest
+
+
+Then ssh to the server
+stop all docker containers
+
+Remove all containers
+docker rm $(docker ps -a -q)
+
+Create the data volume container
+docker create --name mediastore -v /mnt/seagate2TB:/data afcastano/mediastore
+
+List all images
+docker images
+
+Remove sfb image
+docker rmi 1b3343d427f7
+
+get latest version
+docker pull afcastano/sfb
+
+
+
+
+
