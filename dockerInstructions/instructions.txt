@@ -1,0 +1,4 @@
+To update the docker image from mac:
+
+run boot2docker up
+run the exports that it suggests
