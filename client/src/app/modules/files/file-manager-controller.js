@@ -13,28 +13,51 @@ angular.module('sfb-files')
 				$scope.version = data;
 			});
 
+			$scope.targetFileSelected = false;
+            $scope.sourceSelected = false;
+
 			$scope.$watch( 'originTree.currentNode', function( newObj, oldObj ) {
 			    if( $scope.originTree && angular.isObject($scope.originTree.currentNode) ) {
 			        $scope.originFile = $scope.originTree.currentNode.label;
 			        $scope.originDir = $scope.originTree.currentNode.dir;
+                    $scope.sourceSelected = true;
 			    }
 			}, false);
-			
+
 			$scope.$watch( 'targetTree.currentNode', function( newObj, oldObj ) {
+				$scope.targetFileSelected = false;
 			    if( $scope.targetTree && angular.isObject($scope.targetTree.currentNode) ) {
 			    	var node = 	$scope.targetTree.currentNode;
 			    	if(node.isDir) {
-			    		$scope.targetDir = node.dir + '/' + node.label;	
+			    		$scope.targetDir = node.dir + '/' + node.label;
 			    	} else {
 			    		$scope.targetDir = node.dir;
+                        $scope.targetFile = node.label;
+    					$scope.targetFileSelected = true;
 			    	}
 
 			    	$scope.targetNode = node;
-			        
+
 			    }
 			}, false);
 
-		};
+        };
+
+        $scope.onSubtitleError = function(files, type, msg) {
+            alert('Error: ' + msg);
+        };
+
+        $scope.getSubtitleData = function() {
+            return {
+                targetDir: $scope.targetDir,
+                existingFileName: $scope.targetFile
+            };
+        };
+
+        $scope.onSubtitleUploaded = function() {
+                alert('Subtitle successfuly uploaded');
+                $scope.loadSelectedTargetNode();
+        };
 
 		$scope.onDirCreated = function(dir) {
 			$scope.loadTargetFiles();
@@ -77,19 +100,7 @@ angular.module('sfb-files')
 		}
 
 		$scope.onCopyEnd = function() {
-			if($scope.targetNode) {
-				if($scope.targetNode.isDir) {
-					$scope.onNodeExpanded($scope.targetNode); 
-				} else {
-					if($scope.targetNode.parent) {
-						$scope.onNodeExpanded($scope.targetNode.parent); 
-					} else {
-						$scope.loadTargetFiles();		
-					}
-				}
-			} else {
-				$scope.loadTargetFiles();
-			}
+			$scope.loadSelectedTargetNode();
 		}
 
 		$scope.loadOriginFiles = function() {
@@ -101,11 +112,27 @@ angular.module('sfb-files')
 				$scope.origindata = data;
 			}).catch(function(err){
 				alert('Error: ' + err);
-				
+
 			}).finally(function(){
-				$scope.loading = false;			
+				$scope.loading = false;
 			});
 		};
+
+        $scope.loadSelectedTargetNode = function() {
+            if($scope.targetNode) {
+                if($scope.targetNode.isDir) {
+                    $scope.onNodeExpanded($scope.targetNode);
+                } else {
+                    if($scope.targetNode.parent) {
+                        $scope.onNodeExpanded($scope.targetNode.parent);
+                    } else {
+                        $scope.loadTargetFiles();
+                    }
+                }
+            } else {
+                $scope.loadTargetFiles();
+            }
+        };
 
 		$scope.loadTargetFiles = function() {
 			$scope.loading = true;
@@ -144,7 +171,7 @@ angular.module('sfb-files')
 		};
 
 		$scope.chooseDir = function() {
-			$scope.createNewDir=true;			
+			$scope.createNewDir=true;
 		};
 
 	}
